@@ -425,6 +425,29 @@
   .flash-done-banner{ text-align:center; padding:30px 10px; color: var(--ink-muted); font-size:14px; }
   .flash-secondary-btn{ display:block; margin:14px auto 0; }
 
+  /* ---------- Sync / Backup ---------- */
+  .sync-box{ margin-bottom:16px; }
+  .sync-box summary{ cursor:pointer; font-weight:700; font-size:14px; list-style:none; }
+  .sync-box summary::-webkit-details-marker{ display:none; }
+  .sync-box summary::before{ content:'▸ '; color: var(--ink-muted); }
+  .sync-box[open] summary::before{ content:'▾ '; }
+  .sync-body{ margin-top:14px; }
+  .sync-hint{ font-size:12.5px; color: var(--ink-muted); margin:0 0 12px; line-height:1.8; }
+  .sync-box textarea{
+    width:100%; background: var(--surface-2); border:1px solid rgba(166,175,201,.25); border-radius: var(--radius-s);
+    color: var(--ink); font-family:inherit; font-size:12.5px; padding:9px 11px; direction:ltr; text-align:left; resize:vertical;
+  }
+  .sync-row{ display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; align-items:center; }
+  .sync-row input[type=text]{
+    flex:1 1 160px; background: var(--surface-2); border:1px solid rgba(166,175,201,.25); border-radius: var(--radius-s);
+    color: var(--ink); font-family:inherit; font-size:13px; padding:9px 11px; direction:ltr; text-align:left;
+  }
+  .sync-code-display{ font-size:13px; background: var(--surface-2); border-radius: var(--radius-s); padding:8px 11px; direction:ltr; text-align:left; word-break:break-all; }
+  .sync-status{ font-size:12px; margin-top:10px; }
+  .sync-status.ok{ color: var(--teal); }
+  .sync-status.err{ color: var(--danger); }
+  .sync-status.busy{ color: var(--gold); }
+
   ::selection{ background: var(--gold); color:#1E1404; }
   @media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } }
 </style>
@@ -476,6 +499,24 @@
       <div class="stat"><b id="stat-stories">0/0</b><span>داستان خونده‌شده</span></div>
       <div class="stat"><b id="stat-due">0</b><span>فلش‌کارت آماده مرور</span></div>
     </div>
+
+    <details class="card sync-box" id="sync-box">
+      <summary>☁️ همگام‌سازی بین دستگاه‌ها / پشتیبان‌گیری (اختیاری)</summary>
+      <div class="sync-body">
+        <p class="sync-hint">پیشرفت این اپ به‌صورت پیش‌فرض فقط تو همین مرورگر ذخیره می‌شه. برای یکی‌کردنش بین گوشی و سیستم، یا یه فایل پشتیبان بگیرید، یا همگام‌سازی ابری (Firebase) رو وصل کنید.</p>
+
+        <div class="sync-row">
+          <button class="btn secondary" id="export-btn">خروجی گرفتن از پیشرفت (فایل)</button>
+          <button class="btn secondary" id="import-btn">وارد کردن از فایل</button>
+          <input type="file" id="import-file-input" accept="application/json" style="display:none;">
+        </div>
+
+        <p class="sync-hint" style="margin-top:18px;">برای همگام‌سازی زنده بین دستگاه‌ها، یه پروژه رایگان <a href="https://console.firebase.google.com/" target="_blank" rel="noopener">Firebase</a> بسازید، Firestore Database فعال کنید، و پیکربندی وب‌اپش رو اینجا پیست کنید (جزئیات کامل تو README ریپو هست).</p>
+        <div id="sync-config-row"></div>
+        <div id="sync-code-row"></div>
+        <div class="sync-status" id="sync-status"></div>
+      </div>
+    </details>
 
     <div class="card" style="margin-top:16px;">
       <div class="cw-head">
@@ -657,6 +698,8 @@
 
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script>
 /* ---------------- Static plan content ---------------- */
 const WEEKS = [
@@ -876,17 +919,24 @@ async function loadState(){
   renderWriting();
   renderStories();
   renderFlashcards();
+
+  await loadSyncSettings();
+  renderSyncBox();
+  if(firestoreDb && syncCode) pullFromCloud();
 }
 
 async function saveStoriesRead(){
   storageSet('stories-read', JSON.stringify(storiesRead));
+  schedulePushToCloud();
 }
 
 async function saveProgress(){
   storageSet('study-progress', JSON.stringify(progress));
+  schedulePushToCloud();
 }
 async function saveVocab(){
   storageSet('vocab-bank', JSON.stringify(vocab));
+  schedulePushToCloud();
 }
 
 /* ---------------- Derived stats ---------------- */
@@ -1212,6 +1262,7 @@ async function loadFocusPrefs(){
 }
 async function saveFocusPrefs(){
   storageSet('focus-prefs', JSON.stringify(focusPrefs));
+  schedulePushToCloud();
 }
 
 function beep(freq){
@@ -1383,6 +1434,7 @@ async function loadApiKey(){
 async function saveApiKey(key){
   openRouterApiKey = key;
   storageSet('openrouter-api-key', JSON.stringify(key));
+  schedulePushToCloud();
 }
 
 function buildApiKeyRow(onChange){
@@ -2001,6 +2053,215 @@ function renderFlashcards(){
       rateRow.appendChild(b);
     });
     wrap.appendChild(rateRow);
+  }
+}
+
+/* ================= EXPORT / IMPORT ================= */
+function gatherExportData(){
+  return { exportedAt: new Date().toISOString(), progress, vocab, focusPrefs, storiesRead };
+}
+
+function applyImportedData(data){
+  if(data.progress) progress = migrateProgress(data.progress);
+  if(data.vocab) vocab = migrateVocabSRS(data.vocab);
+  if(data.focusPrefs) focusPrefs = data.focusPrefs;
+  if(data.storiesRead) storiesRead = data.storiesRead;
+  if(data.openRouterApiKey){
+    openRouterApiKey = data.openRouterApiKey;
+    storageSet('openrouter-api-key', JSON.stringify(openRouterApiKey));
+  }
+  storageSet('study-progress', JSON.stringify(progress));
+  storageSet('vocab-bank', JSON.stringify(vocab));
+  storageSet('focus-prefs', JSON.stringify(focusPrefs));
+  storageSet('stories-read', JSON.stringify(storiesRead));
+  render();
+  rebuildFocusPhases();
+  initChatDefaults();
+  initListeningDefaults();
+  renderWriting();
+  flashSessionStarted = false;
+  renderFlashcards();
+}
+
+document.getElementById('export-btn').addEventListener('click', () => {
+  const data = gatherExportData();
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `english-tracker-backup-${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById('import-btn').addEventListener('click', () => {
+  document.getElementById('import-file-input').click();
+});
+document.getElementById('import-file-input').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  try{
+    const text = await file.text();
+    const data = JSON.parse(text);
+    if(!confirm('این کار پیشرفت فعلی این دستگاه رو با محتوای فایل پشتیبان جایگزین می‌کنه. ادامه بدم؟')){ e.target.value=''; return; }
+    applyImportedData(data);
+    alert('وارد شد! ✅');
+  }catch(err){
+    alert('فایل معتبر نیست: ' + err.message);
+  }
+  e.target.value = '';
+});
+
+/* ================= CLOUD SYNC (Firebase, optional) ================= */
+let firebaseConfig = null;
+let syncCode = '';
+let firebaseApp = null;
+let firestoreDb = null;
+let syncStatus = 'idle'; // idle | syncing | synced | error
+let pushDebounceTimer = null;
+
+async function loadSyncSettings(){
+  try{
+    const c = storageGet('firebase-config');
+    firebaseConfig = c ? JSON.parse(c) : null;
+  }catch(e){ firebaseConfig = null; }
+  try{
+    const s = storageGet('sync-code');
+    syncCode = s ? JSON.parse(s) : '';
+  }catch(e){ syncCode = ''; }
+  if(firebaseConfig) initFirebaseApp();
+}
+
+function initFirebaseApp(){
+  if(firebaseApp || !firebaseConfig) return;
+  try{
+    firebaseApp = firebase.initializeApp(firebaseConfig);
+    firestoreDb = firebase.firestore();
+  }catch(e){ console.error('firebase init failed', e); firebaseApp = null; firestoreDb = null; }
+}
+
+function genSyncCode(){
+  const rand = () => Math.random().toString(36).slice(2, 8);
+  return `${rand()}-${rand()}-${rand()}`;
+}
+
+async function pullFromCloud(){
+  if(!firestoreDb || !syncCode) return;
+  syncStatus = 'syncing'; renderSyncBox();
+  try{
+    const doc = await firestoreDb.collection('sync').doc(syncCode).get();
+    if(doc.exists){
+      applyImportedData(doc.data());
+    } else {
+      await pushToCloud();
+    }
+    syncStatus = 'synced';
+  }catch(e){
+    console.error('cloud pull failed', e);
+    syncStatus = 'error';
+  }
+  renderSyncBox();
+}
+
+function schedulePushToCloud(){
+  if(!firestoreDb || !syncCode) return;
+  clearTimeout(pushDebounceTimer);
+  pushDebounceTimer = setTimeout(pushToCloud, 1500);
+}
+
+async function pushToCloud(){
+  if(!firestoreDb || !syncCode) return;
+  syncStatus = 'syncing'; renderSyncBox();
+  try{
+    await firestoreDb.collection('sync').doc(syncCode).set({
+      progress, vocab, focusPrefs, storiesRead, openRouterApiKey,
+      updatedAt: new Date().toISOString()
+    });
+    syncStatus = 'synced';
+  }catch(e){
+    console.error('cloud push failed', e);
+    syncStatus = 'error';
+  }
+  renderSyncBox();
+}
+
+function renderSyncBox(){
+  const configRow = document.getElementById('sync-config-row');
+  const codeRow = document.getElementById('sync-code-row');
+  const statusEl = document.getElementById('sync-status');
+  if(!configRow) return;
+
+  configRow.innerHTML = '';
+  if(!firebaseConfig){
+    const wrap = document.createElement('div');
+    wrap.innerHTML = `<textarea id="fb-config-input" rows="4" placeholder='پیکربندی Firebase (یه شیء JSON مثل {"apiKey":"...","projectId":"...",...})'></textarea><div class="sync-row"><button class="btn secondary" id="fb-config-save-btn">ذخیره پیکربندی</button></div>`;
+    wrap.querySelector('#fb-config-save-btn').addEventListener('click', () => {
+      const raw = wrap.querySelector('#fb-config-input').value.trim();
+      try{
+        const parsed = JSON.parse(raw);
+        firebaseConfig = parsed;
+        storageSet('firebase-config', JSON.stringify(parsed));
+        initFirebaseApp();
+        renderSyncBox();
+      }catch(e){ alert('این متن یه JSON معتبر نیست — پیکربندی Firebase رو دقیقاً کپی/پیست کنید.'); }
+    });
+    configRow.appendChild(wrap);
+  } else {
+    const wrap = document.createElement('div');
+    wrap.innerHTML = `<span class="api-key-status">✅ پیکربندی Firebase ثبت شده</span> <button class="link-btn" id="fb-config-clear-btn">پاکش کن</button>`;
+    wrap.querySelector('#fb-config-clear-btn').addEventListener('click', () => {
+      firebaseConfig = null;
+      firebaseApp = null;
+      firestoreDb = null;
+      storageSet('firebase-config', JSON.stringify(null));
+      renderSyncBox();
+    });
+    configRow.appendChild(wrap);
+  }
+
+  codeRow.innerHTML = '';
+  if(firebaseConfig){
+    if(!syncCode){
+      const wrap = document.createElement('div');
+      wrap.className = 'sync-row';
+      wrap.innerHTML = `<input type="text" id="sync-code-input" placeholder="کد همگام‌سازی (یا خالی بذار تا بسازیمش)"><button class="btn secondary" id="sync-connect-btn">اتصال</button>`;
+      wrap.querySelector('#sync-connect-btn').addEventListener('click', () => {
+        const val = wrap.querySelector('#sync-code-input').value.trim() || genSyncCode();
+        syncCode = val;
+        storageSet('sync-code', JSON.stringify(val));
+        initFirebaseApp();
+        pullFromCloud();
+        renderSyncBox();
+      });
+      codeRow.appendChild(wrap);
+    } else {
+      const wrap = document.createElement('div');
+      wrap.innerHTML = `<div class="sync-code-display">کد شما: <b>${escapeHtml(syncCode)}</b></div><p class="sync-hint">همین کد رو تو هر دستگاه دیگه‌ای وارد کنید تا پیشرفتش یکی بشه. این کد مثل یه رمز عبوره — جایی که بهش اعتماد ندارید share نکنید.</p><button class="link-btn" id="sync-disconnect-btn">قطع اتصال (فقط رو همین دستگاه)</button>`;
+      wrap.querySelector('#sync-disconnect-btn').addEventListener('click', () => {
+        syncCode = '';
+        storageSet('sync-code', JSON.stringify(''));
+        renderSyncBox();
+      });
+      codeRow.appendChild(wrap);
+    }
+  }
+
+  if(statusEl){
+    if(!firebaseConfig || !syncCode){
+      statusEl.textContent = '';
+      statusEl.className = 'sync-status';
+    } else if(syncStatus === 'syncing'){
+      statusEl.textContent = '⏳ در حال همگام‌سازی…';
+      statusEl.className = 'sync-status busy';
+    } else if(syncStatus === 'synced'){
+      statusEl.textContent = '✅ همگام با ابر';
+      statusEl.className = 'sync-status ok';
+    } else if(syncStatus === 'error'){
+      statusEl.textContent = '⚠️ همگام‌سازی ناموفق بود — پیکربندی یا اتصال اینترنت رو چک کنید.';
+      statusEl.className = 'sync-status err';
+    }
   }
 }
 
