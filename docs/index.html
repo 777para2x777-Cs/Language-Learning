@@ -1384,15 +1384,15 @@ function buildApiKeyRow(onChange){
   const wrap = document.createElement('div');
   wrap.className = 'api-key-row';
   if(claudeApiKey){
-    wrap.innerHTML = `<span class="api-key-status">🔑 کلید API ثبت شده</span><button class="link-btn" id="apikey-change-btn">تغییرش بده</button>`;
-    wrap.querySelector('#apikey-change-btn').addEventListener('click', async () => {
+    wrap.innerHTML = `<span class="api-key-status">🔑 کلید API ثبت شده</span><button class="link-btn">تغییرش بده</button>`;
+    wrap.querySelector('button').addEventListener('click', async () => {
       await saveApiKey('');
       onChange();
     });
   } else {
-    wrap.innerHTML = `<input type="password" id="apikey-input" placeholder="کلید API آنتروپیک‌تون رو وارد کنید (sk-ant-…)"><button class="btn secondary" id="apikey-save-btn">ذخیره</button>`;
-    wrap.querySelector('#apikey-save-btn').addEventListener('click', async () => {
-      const val = wrap.querySelector('#apikey-input').value.trim();
+    wrap.innerHTML = `<input type="password" placeholder="کلید API آنتروپیک‌تون رو وارد کنید (sk-ant-…)"><button class="btn secondary">ذخیره</button>`;
+    wrap.querySelector('button').addEventListener('click', async () => {
+      const val = wrap.querySelector('input').value.trim();
       if(!val) return;
       await saveApiKey(val);
       onChange();
@@ -1512,18 +1512,19 @@ function renderChat(){
 }
 
 async function sendChatMessage(){
-  const input = document.getElementById('chat-input');
-  const text = input.value.trim();
-  if(!text || chatLoading || !claudeApiKey) return;
+  try{
+    const input = document.getElementById('chat-input');
+    const text = input.value.trim();
+    if(!text || chatLoading || !claudeApiKey) return;
 
-  chatHistory.push({ role:'user', text });
-  input.value = '';
-  chatLoading = true;
-  renderChat();
+    chatHistory.push({ role:'user', text });
+    input.value = '';
+    chatLoading = true;
+    renderChat();
 
-  const topic = currentChatTopic();
-  const wk = WEEKS[chatWeekIdx];
-  const systemPrompt = `You are a warm, patient English conversation partner helping a Persian-speaking B1-level English learner practice SPEAKING, as part of a structured reading-and-speaking study plan. Today's topic (an article the learner just read) is: "${topic.title}" — part of this week's theme "${wk.title}".
+    const topic = currentChatTopic();
+    const wk = WEEKS[chatWeekIdx];
+    const systemPrompt = `You are a warm, patient English conversation partner helping a Persian-speaking B1-level English learner practice SPEAKING, as part of a structured reading-and-speaking study plan. Today's topic (an article the learner just read) is: "${topic.title}" — part of this week's theme "${wk.title}".
 Rules for every reply:
 - Keep your reply SHORT: 2 to 4 simple sentences, B1-level vocabulary and grammar.
 - Always end with exactly one engaging follow-up question about the topic to keep the conversation going.
@@ -1531,7 +1532,6 @@ Rules for every reply:
 - Always reply in English only, even if the learner writes in Persian.
 - Be warm and encouraging, like a supportive conversation partner, not a strict teacher.`;
 
-  try{
     const apiMessages = chatHistory.map(m => ({ role: m.role, content: m.text }));
     const reply = (await callClaude(systemPrompt, apiMessages)) || "Sorry, could you say that again?";
     chatHistory.push({ role:'assistant', text: reply });
@@ -1539,9 +1539,10 @@ Rules for every reply:
     renderChat();
     speak(reply);
   }catch(e){
-    chatHistory.push({ role:'assistant', text:"Sorry, I couldn't connect just now — please check your API key and try again." });
+    console.error('sendChatMessage failed', e);
+    chatHistory.push({ role:'assistant', text: "Sorry, something went wrong (" + (e && e.message ? e.message : 'unknown error') + "). Please check your API key and try again." });
     chatLoading = false;
-    renderChat();
+    try{ renderChat(); }catch(e2){ console.error('renderChat failed too', e2); }
   }
 }
 
