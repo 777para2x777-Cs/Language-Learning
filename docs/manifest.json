@@ -1,7 +1,7 @@
 {
-  "name": "English B1 Tracker",
+  "name": "English A2-B2 Tracker",
   "short_name": "EN Tracker",
-  "description": "مسیر دوماهه یادگیری انگلیسی — Reading, Listening, Speaking, Writing (سطح B1)",
+  "description": "مسیر یادگیری انگلیسی — Reading, Listening, Speaking, Writing و گرامر، سطح A2 تا B2 (گرامر تا C1)",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",

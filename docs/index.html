@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>مسیر دوماهه انگلیسی — B1</title>
+<title>مسیر یادگیری انگلیسی — A2 تا B2</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#171E2E">
 <link rel="icon" href="icons/icon-192.png">
@@ -448,6 +448,48 @@
   .sync-status.err{ color: var(--danger); }
   .sync-status.busy{ color: var(--gold); }
 
+  /* ---------- Grammar ---------- */
+  .grammar-level-row{ display:flex; gap:6px; margin-bottom:16px; flex-wrap:wrap; }
+  .grammar-level-btn{
+    flex:1; min-width:60px; padding:9px 6px; border-radius: var(--radius-s); border:1px solid rgba(166,175,201,.25);
+    background: var(--surface-2); color: var(--ink-muted); font-family:inherit; font-size:13px; font-weight:700; cursor:pointer;
+  }
+  .grammar-level-btn.active{ background: var(--gold); color:#1E1404; border-color: transparent; }
+  .grammar-topic{ background: var(--surface); border-radius: var(--radius-l); margin-bottom:10px; overflow:hidden; }
+  .grammar-topic-header{ display:flex; align-items:center; gap:10px; padding:14px 18px; cursor:pointer; }
+  .grammar-topic-title{ flex:1; font-weight:700; font-size:14.5px; }
+  .grammar-topic.open .chevron{ transform: rotate(180deg); }
+  .grammar-topic-body{ display:none; padding:0 18px 18px; }
+  .grammar-topic.open .grammar-topic-body{ display:block; }
+  .grammar-explanation{ font-size:13.5px; line-height:1.9; color: var(--ink); background: var(--surface-2); border-radius: var(--radius-m); padding:14px 16px; margin-bottom:14px; }
+  .grammar-examples{ margin: 0 0 16px; padding-inline-start:18px; font-size:13px; color: var(--ink-muted); line-height:1.9; direction:ltr; text-align:left; }
+  .grammar-examples li{ margin-bottom:4px; }
+  .grammar-exercise-title{ font-size:13px; font-weight:700; color: var(--gold); margin:0 0 10px; }
+  .grammar-ex{ background: var(--surface-2); border-radius: var(--radius-m); padding:12px 14px; margin-bottom:10px; }
+  .grammar-ex-q{ font-size:13.5px; margin-bottom:10px; direction:ltr; text-align:left; }
+  .grammar-ex-options{ display:flex; flex-direction:column; gap:6px; }
+  .grammar-ex-options label{ display:flex; align-items:center; gap:8px; font-size:13px; direction:ltr; text-align:left; cursor:pointer; }
+  .grammar-ex input[type=text]{
+    width:100%; background: var(--surface); border:1px solid rgba(166,175,201,.25); border-radius: var(--radius-s);
+    color: var(--ink); font-family:inherit; font-size:13px; padding:8px 10px; direction:ltr; text-align:left;
+  }
+  .grammar-ex-result{ margin-top:8px; font-size:12.5px; font-weight:600; }
+  .grammar-ex-result.correct{ color: var(--teal); }
+  .grammar-ex-result.wrong{ color: var(--danger); }
+  .grammar-score{ text-align:center; font-weight:800; font-size:15px; margin-top:12px; }
+  .grammar-week-link{
+    display:inline-block; margin-top:8px; font-size:12px; color: var(--gold); background: rgba(232,165,68,.12);
+    border:1px dashed rgba(232,165,68,.4); border-radius:8px; padding:6px 10px; cursor:pointer;
+  }
+
+  /* ---------- Level switcher ---------- */
+  .level-row{ display:flex; gap:6px; margin: 14px 0 0; }
+  .level-btn{
+    flex:1; padding:9px 6px; border-radius: var(--radius-s); border:1px solid rgba(166,175,201,.25);
+    background: var(--surface); color: var(--ink-muted); font-family:inherit; font-size:13px; font-weight:700; cursor:pointer;
+  }
+  .level-btn.active{ background: var(--teal); color:#0B1F1C; border-color: transparent; }
+
   ::selection{ background: var(--gold); color:#1E1404; }
   @media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } }
 </style>
@@ -456,8 +498,9 @@
 <div class="app">
 
   <div class="app-header">
-    <h1>مسیر دوماهه انگلیسی — سطح B1</h1>
-    <p>تمرکز روی هر چهار مهارت: Reading، Listening، Speaking و Writing · ۳ جلسه در هفته + جمع‌بندی جمعه‌ها</p>
+    <h1 id="app-title">مسیر دوماهه انگلیسی</h1>
+    <p>سه سطح A2 تا B2 · هر چهار مهارت Reading، Listening، Speaking و Writing · بخش گرامر جامع از A2 تا C1</p>
+    <div class="level-row" id="level-row"></div>
   </div>
 
   <div class="tabs">
@@ -467,6 +510,7 @@
     <button class="tab-btn" data-view="listening">شنیداری</button>
     <button class="tab-btn" data-view="writing">نوشتاری</button>
     <button class="tab-btn" data-view="plan">برنامه هفتگی</button>
+    <button class="tab-btn" data-view="grammar">گرامر</button>
     <button class="tab-btn" data-view="stories">استوری‌بوک</button>
     <button class="tab-btn" data-view="vocab">دایره واژگان</button>
     <button class="tab-btn" data-view="flashcards">فلش‌کارت</button>
@@ -524,6 +568,7 @@
         <span class="cw-badge" id="cw-month">ماه اول</span>
       </div>
       <div class="cw-theme" id="cw-theme">—</div>
+      <div id="cw-grammar-link"></div>
       <div class="sess-list" id="cw-sessions"></div>
     </div>
   </div>
@@ -632,6 +677,14 @@
     <div id="weeks-container"></div>
   </div>
 
+  <!-- ===================== GRAMMAR ===================== -->
+  <div class="view" id="view-grammar">
+    <div class="card">
+      <div class="grammar-level-row" id="grammar-level-row"></div>
+      <div id="grammar-list"></div>
+    </div>
+  </div>
+
   <!-- ===================== STORY BOOK ===================== -->
   <div class="view" id="view-stories">
     <div class="card">
@@ -702,7 +755,123 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script>
 /* ---------------- Static plan content ---------------- */
-const WEEKS = [
+const LEVELS = {
+A2: { label:"A2 — مقدماتی", weeks: [
+  { num:1, month:1, title:"معرفی خود و زندگی روزمره",
+    speaking:"معرفی خودتون و توصیف کارهای روزمره با Present Simple",
+    writingPrompt:"یک پاراگراف ۶۰ تا ۹۰ کلمه‌ای بنویسید درباره یک روز معمولی‌تون — کِی بیدار می‌شید، چیکار می‌کنید، کِی می‌خوابید. فقط از Present Simple استفاده کنید.",
+    writingWordRange:[60,90],
+    writingChecks:[
+      { label:"فعل‌های روتین با Present Simple (get up / go / eat / start / work / study)", regex:/\b(get up|go to|goes to|eat|eats|start|starts|work|works|study|studies|watch|watches)\b/i },
+    ],
+    grammarTopicId:"a2-present-simple",
+    readings:[
+      { title:"A message to a new friend — British Council A2 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/a2/message-new-friend" },
+      { title:"Study skills tips — British Council A2 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/a2/study-skills-tips" },
+      { title:"An end of term report — British Council A2 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/a2/end-term-report" },
+    ]},
+  { num:2, month:1, title:"خانه، شهر و اتفاقات همین الان",
+    speaking:"توصیف مکان‌ها با there is/are و کارهایی که همین الان در حال انجامشونه با Present Continuous",
+    writingPrompt:"درباره خونه یا محله‌تون بنویسید (۶۰ تا ۹۰ کلمه) — از there is/there are برای توصیف مکان، و از Present Continuous برای چیزی که این روزها/همین الان داره اتفاق می‌افته استفاده کنید.",
+    writingWordRange:[60,90],
+    writingChecks:[
+      { label:"there is / there are", regex:/\bthere\s+(is|are|'s)\b/i },
+      { label:"Present Continuous (am/is/are + فعل‌ing)", regex:/\b(am|is|are|'m|'re)\s+\w+ing\b/i },
+    ],
+    grammarTopicId:"a2-present-continuous",
+    readings:[
+      { title:"Animals in the city (A2) — LearnEnglish Teens", url:"https://learnenglishteens.britishcouncil.org/study-break/reading-zone/a2-graded-reading/animals-city-a2" },
+      { title:"A walk in the forest (A2) — LearnEnglish Teens", url:"https://learnenglishteens.britishcouncil.org/study-break/reading-zone/a2-graded-reading/walk-forest-a2" },
+      { title:"An airport notice — British Council A2 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/a2/airport-notice" },
+    ]},
+  { num:3, month:1, title:"خاطرات و گذشته",
+    speaking:"تعریف یک خاطره ساده با Past Simple (افعال باقاعده و بی‌قاعده رایج)",
+    writingPrompt:"یک خاطره کوتاه از دیروز یا هفته پیش بنویسید (۷۰ تا ۱۰۰ کلمه) — فقط از Past Simple استفاده کنید.",
+    writingWordRange:[70,100],
+    writingChecks:[
+      { label:"فعل باقاعده گذشته (-ed)", regex:/\b\w+ed\b/i },
+      { label:"فعل بی‌قاعده رایج گذشته (went/saw/had/did/was/were/got/made)", regex:/\b(went|saw|had|did|was|were|got|made|said|came|took)\b/i },
+    ],
+    grammarTopicId:"a2-past-simple",
+    readings:[
+      { title:"Dreams (A2) — LearnEnglish Teens", url:"https://learnenglishteens.britishcouncil.org/study-break/reading-zone/a2-graded-reading/dreams-a2" },
+      { title:"Mystery train (A2) — LearnEnglish Teens", url:"https://learnenglishteens.britishcouncil.org/study-break/reading-zone/a2-graded-reading/mystery-train-a2" },
+      { title:"Love is blind (A2) — LearnEnglish Teens", url:"https://learnenglishteens.britishcouncil.org/study-break/reading-zone/a2-graded-reading/love-blind-a2" },
+    ]},
+  { num:4, month:1, title:"توانایی و درخواست مؤدبانه",
+    speaking:"بیان توانایی حال و گذشته (can/could) و درخواست مؤدبانه",
+    writingPrompt:"بنویسید الان چه کارهایی می‌تونید بکنید و بچه که بودید چه کارهایی می‌تونستید بکنید (۷۰ تا ۱۰۰ کلمه) — از can و could استفاده کنید.",
+    writingWordRange:[70,100],
+    writingChecks:[
+      { label:"can (توانایی در زمان حال)", regex:/\bcan\b/i },
+      { label:"could (توانایی در گذشته)", regex:/\bcould\b/i },
+    ],
+    grammarTopicId:"a2-can-could",
+    readings:[
+      { title:"Bully (A2) — LearnEnglish Teens", url:"https://learnenglishteens.britishcouncil.org/study-break/reading-zone/a2-graded-reading/bully-a2" },
+      { title:"Cheat! (A2) — LearnEnglish Teens", url:"https://learnenglishteens.britishcouncil.org/study-break/reading-zone/a2-graded-reading/cheat-a2" },
+      { title:"Guess what? (A2) — LearnEnglish Teens", url:"https://learnenglishteens.britishcouncil.org/study-break/reading-zone/a2-graded-reading/guess-what-a2" },
+    ],
+    selfTest:"خودآزمایی ۱: متن ناآشنای «Hidden treasure in the Rocky Mountains» رو زمان‌دار بخونید و در ۱ دقیقه شفاهی خلاصه‌ش کنید — ضبط رو نگه دارید تا هفته ۸.",
+    selfTestReading:{ title:"Hidden treasure in the Rocky Mountains (A2) — LearnEnglish Teens", url:"https://learnenglishteens.britishcouncil.org/study-break/reading-zone/a2-graded-reading/hidden-treasure-rocky-mountains-a2" } },
+  { num:5, month:2, title:"برنامه‌های نزدیک",
+    speaking:"صحبت درباره برنامه‌های آینده نزدیک با going to",
+    writingPrompt:"برنامه آخر هفته یا تعطیلات بعدی‌تون رو بنویسید (۷۰ تا ۱۰۰ کلمه) — از going to استفاده کنید.",
+    writingWordRange:[70,100],
+    writingChecks:[
+      { label:"going to (برنامه آینده)", regex:/\bgoing to\b/i },
+    ],
+    grammarTopicId:"a2-going-to-future",
+    readings:[
+      { title:"An invitation to a job interview — British Council A2 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/a2/invitation-job-interview" },
+      { title:"Choosing a conference venue — British Council A2 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/a2/choosing-conference-venue" },
+      { title:"English course prospectus — British Council A2 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/a2/english-course-prospectus" },
+    ]},
+  { num:6, month:2, title:"مقایسه و ترجیحات",
+    speaking:"مقایسه دو چیز یا دو تجربه با comparatives/superlatives",
+    writingPrompt:"دو چیز رو با هم مقایسه کنید — مثلاً دو شهر یا دو سرگرمی (۷۰ تا ۱۰۰ کلمه). از صفت تفضیلی (bigger, more interesting) و صفت عالی (the best) استفاده کنید.",
+    writingWordRange:[70,100],
+    writingChecks:[
+      { label:"صفت تفضیلی (-er یا more)", regex:/\b\w+er\b|\bmore\s+\w+/i },
+      { label:"صفت عالی (the -est یا the most)", regex:/\bthe\s+\w+est\b|\bthe most\b/i },
+    ],
+    grammarTopicId:"a2-comparatives",
+    readings:[
+      { title:"Happiness (A2) — LearnEnglish Teens", url:"https://learnenglishteens.britishcouncil.org/study-break/reading-zone/a2-graded-reading/happiness-a2" },
+      { title:"LA skaters: an interview (A2) — LearnEnglish Teens", url:"https://learnenglishteens.britishcouncil.org/study-break/reading-zone/a2-graded-reading/la-skaters-interview-a2" },
+      { title:"Life as a YouTuber (A2) — LearnEnglish Teens", url:"https://learnenglishteens.britishcouncil.org/study-break/reading-zone/a2-graded-reading/life-youtuber-a2" },
+    ]},
+  { num:7, month:2, title:"غذا و خرید",
+    speaking:"صحبت درباره غذا و خرید با some/any/much/many/a lot of",
+    writingPrompt:"لیست خرید یا غذاهایی که این هفته خوردید رو بنویسید (۷۰ تا ۱۰۰ کلمه) — از some/any/much/many/a lot of استفاده کنید.",
+    writingWordRange:[70,100],
+    writingChecks:[
+      { label:"some / any", regex:/\b(some|any)\b/i },
+      { label:"much / many / a lot of", regex:/\b(much|many|a lot of)\b/i },
+    ],
+    grammarTopicId:"a2-countable-uncountable",
+    readings:[
+      { title:"Graffiti and street art (A2) — LearnEnglish Teens", url:"https://learnenglishteens.britishcouncil.org/study-break/reading-zone/a2-graded-reading/graffiti-street-art-a2" },
+      { title:"Rumpelstiltskin: a modern retelling (A2) — LearnEnglish Teens", url:"https://learnenglishteens.britishcouncil.org/study-break/reading-zone/a2-graded-reading/rumpelstiltskin-modern-retelling-a2" },
+      { title:"Good Night Stories for Rebel Girls: book review (A2) — LearnEnglish Teens", url:"https://learnenglishteens.britishcouncil.org/study-break/reading-zone/a2-graded-reading/good-night-stories-rebel-girls-book-review-a2" },
+    ]},
+  { num:8, month:2, title:"جمع‌بندی نهایی",
+    speaking:"ضبط یک معرفی کوتاه ۱ دقیقه‌ای از خودتون، با جمع‌بندی گرامرهای این دوره",
+    writingPrompt:"یک جمع‌بندی ۸۰ تا ۱۲۰ کلمه‌ای بنویسید از مهم‌ترین چیزی که یاد گرفتید — از حروف اضافه زمان/مکان (in/on/at) هم استفاده کنید.",
+    writingWordRange:[80,120],
+    writingChecks:[
+      { label:"حروف اضافه زمان/مکان (in / on / at)", regex:/\b(in|on|at)\b/i },
+    ],
+    grammarTopicId:"a2-prepositions",
+    readings:[
+      { title:"The Hunger Games: book review (A2) — LearnEnglish Teens", url:"https://learnenglishteens.britishcouncil.org/study-break/reading-zone/a2-graded-reading/hunger-games-book-review-a2" },
+      { title:"The Life of Pi: book review (A2) — LearnEnglish Teens", url:"https://learnenglishteens.britishcouncil.org/study-break/reading-zone/a2-graded-reading/life-pi-book-review-a2" },
+      { title:"The only thing to fear is … (A2) — LearnEnglish Teens", url:"https://learnenglishteens.britishcouncil.org/study-break/reading-zone/a2-graded-reading/only-thing-fear-a2" },
+    ],
+    selfTest:"خودآزمایی ۲: متن ناآشنای «Amazing adventurers» رو با همون قالب هفته ۴ بخونید، سپس دو ضبط (هفته ۴ و ۸) رو کنار هم گوش بدید و تفاوت روانی و تلفظ رو یادداشت کنید.",
+    selfTestReading:{ title:"Amazing adventurers (A2) — LearnEnglish Teens", url:"https://learnenglishteens.britishcouncil.org/study-break/reading-zone/a2-graded-reading/amazing-adventurers-a2" } },
+]},
+B1: { label:"B1 — متوسط", weeks: [
   { num:1, month:1, title:"زندگی روزمره و علایق شخصی",
     speaking:"توصیف علایق و عادات روزمره با زمان حال ساده و استمراری",
     writingPrompt:"یک پاراگراف ۱۰۰ تا ۱۵۰ کلمه‌ای بنویسید درباره یک روز معمولی زندگی‌تون و یکی از علایق‌تون. سعی کنید هم از Present Simple (کارهای روتین) و هم از Present Continuous (کاری که این روزها مشغولش هستید) استفاده کنید.",
@@ -711,6 +880,7 @@ const WEEKS = [
       { label:"Present Continuous (am/is/are + فعل‌ing)", regex:/\b(am|is|are|'m|'re|'s)\s+\w+ing\b/i },
       { label:"نشونه‌های Present Simple (usually / every day / often / always)", regex:/\b(usually|every day|often|always|sometimes)\b/i },
     ],
+    grammarTopicId:"b1-present-tenses-review",
     readings:[
       { title:"A flyer for a gym — British Council B1 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/b1/flyer-gym" },
       { title:"An email request for help — British Council B1 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/b1/email-request-help" },
@@ -725,6 +895,7 @@ const WEEKS = [
       { label:"Past Continuous (was/were + فعل‌ing)", regex:/\b(was|were)\s+\w+ing\b/i },
       { label:"آینده (going to / will)", regex:/\b(going to|will|'ll)\b/i },
     ],
+    grammarTopicId:"b1-past-tenses",
     readings:[
       { title:"A travel guide (Bangkok) — British Council B1 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/b1/travel-guide" },
       { title:"Digital habits across generations — British Council B1 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/b1/digital-habits-across-generations" },
@@ -738,6 +909,7 @@ const WEEKS = [
       { label:"because (بیان علت)", regex:/\bbecause\b/i },
       { label:"so (بیان نتیجه)", regex:/\bso\b/i },
     ],
+    grammarTopicId:"b1-cause-effect",
     readings:[
       { title:"World Environment Day — British Council Magazine Zone", url:"https://learnenglish.britishcouncil.org/free-resources/general/magazine-zone/world-environment-day" },
       { title:"جدیدترین مطلب — VOA Science & Technology", url:"https://learningenglish.voanews.com/z/1579" },
@@ -750,6 +922,7 @@ const WEEKS = [
     writingChecks:[
       { label:"عبارت موافقت/مخالفت (I agree / I don't think / I disagree)", regex:/\bI\s+(agree|disagree|don't think|do not think)\b/i },
     ],
+    grammarTopicId:"b1-agree-disagree",
     readings:[
       { title:"How to spot fake news — British Council B1 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/b1/how-spot-fake-news" },
       { title:"جدیدترین مطلب — VOA Arts & Culture", url:"https://learningenglish.voanews.com/z/986" },
@@ -765,6 +938,7 @@ const WEEKS = [
       { label:"should / could (توصیه)", regex:/\b(should|could)\b/i },
       { label:"صفت تفضیلی (comparative: …er than / more … than)", regex:/\b\w+er than\b|\bmore \w+ than\b/i },
     ],
+    grammarTopicId:"b1-advice-comparatives",
     readings:[
       { title:"Mindfulness — British Council Magazine Zone", url:"https://learnenglish.britishcouncil.org/free-resources/general/magazine-zone/mindfulness" },
       { title:"Yoga — British Council Magazine Zone", url:"https://learnenglish.britishcouncil.org/free-resources/general/magazine-zone/yoga" },
@@ -778,6 +952,7 @@ const WEEKS = [
       { label:"used to (عادت‌های گذشته)", regex:/\bused to\b/i },
       { label:"Present Perfect (have/has + فعل سوم)", regex:/\b(have|has|'ve|'s)\s+\w+/i },
     ],
+    grammarTopicId:"b1-used-to-present-perfect",
     readings:[
       { title:"A conference programme — British Council B1 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/b1/conference-programme" },
       { title:"Innovation in business — British Council B1 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/b1/innovation-business" },
@@ -790,6 +965,7 @@ const WEEKS = [
     writingChecks:[
       { label:"کلمات ربط زمانی (first / then / after that / finally / next)", regex:/\b(first|then|after that|finally|next|later)\b/i },
     ],
+    grammarTopicId:"b1-storytelling-sequencing",
     readings:[
       { title:"The legend of fairies — British Council B1 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/b1/legend-fairies" },
       { title:"The Martian: a book review — British Council B1 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/b1/martian-book-review" },
@@ -802,6 +978,7 @@ const WEEKS = [
     writingChecks:[
       { label:"کلمات جمع‌بندی/یادگیری (learn / improve / practice)", regex:/\b(learn|learned|learnt|improve|improved|practice|practiced)\b/i },
     ],
+    grammarTopicId:"b1-mixed-review",
     readings:[
       { title:"Social media influencers — British Council B1 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/b1/social-media-influencers" },
       { title:"Robot teachers — British Council B1 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/b1/robot-teachers" },
@@ -809,8 +986,122 @@ const WEEKS = [
     ],
     selfTest:"خودآزمایی ۲: متن ناآشنای «Planning an event» را با همان قالب هفته ۴ بخوانید، سپس دو ضبط (هفته ۴ و ۸) را کنار هم گوش دهید و تفاوت روانی و تلفظ را یادداشت کنید.",
     selfTestReading:{ title:"Planning an event — British Council B1 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/b1/planning-event" } },
-];
-const TOTAL_SESSIONS = WEEKS.length * 4; // 3 weekday + 1 friday per week
+]},
+B2: { label:"B2 — متوسط رو به بالا", weeks: [
+  { num:1, month:1, title:"کار و همکاری بین‌المللی",
+    speaking:"صحبت درباره تجربه‌ها و پروژه‌های کاری/تحصیلی مستمر با Present Perfect Continuous",
+    writingPrompt:"درباره تجربه کاری یا تحصیلی‌تون بنویسید (۱۵۰ تا ۲۰۰ کلمه) — از Present Perfect Continuous (I have been working on…) برای کارهایی که مدتیه ادامه دارن استفاده کنید.",
+    writingWordRange:[150,200],
+    writingChecks:[
+      { label:"Present Perfect Continuous (have/has been + فعل‌ing)", regex:/\b(have|has|'ve|'s)\s+been\s+\w+ing\b/i },
+    ],
+    grammarTopicId:"b2-present-perfect-continuous",
+    readings:[
+      { title:"Millennials in the workplace — British Council B2 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/b2/millennials-workplace" },
+      { title:"Work–life balance — British Council B2 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/b2/work-life-balance" },
+      { title:"Cultural expectations and leadership — British Council B2 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/b2/cultural-expectations-leadership" },
+    ]},
+  { num:2, month:1, title:"ارتباطات دیجیتال",
+    speaking:"بحث درباره تأثیر تکنولوژی بر ارتباطات با ساختار مجهول (Passive Voice)",
+    writingPrompt:"درباره تأثیر تکنولوژی روی نحوه ارتباط آدم‌ها بنویسید (۱۵۰ تا ۲۰۰ کلمه) — حداقل ۲ جمله با ساختار مجهول (passive) به‌کار ببرید.",
+    writingWordRange:[150,200],
+    writingChecks:[
+      { label:"جمله مجهول (is/are/was/were/been/being + قسمت سوم فعل)", regex:/\b(is|are|was|were|been|being)\s+\w+(ed|en)\b/i },
+    ],
+    grammarTopicId:"b2-passive-voice",
+    readings:[
+      { title:"Instant messages — British Council B2 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/b2/instant-messages" },
+      { title:"An email from a friend — British Council B2 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/b2/email-friend" },
+      { title:"A short story extract — British Council B2 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/b2/short-story-extract" },
+    ]},
+  { num:3, month:1, title:"محیط‌زیست و مصرف",
+    speaking:"نقل‌قول غیرمستقیم نظرات دیگران درباره محیط‌زیست (Reported Speech)",
+    writingPrompt:"یه مکالمه یا مصاحبه‌ای که اخیراً درباره محیط‌زیست یا مصرف دیدید/شنیدید رو به‌صورت نقل‌قول غیرمستقیم بازگو کنید (۱۵۰ تا ۲۰۰ کلمه).",
+    writingWordRange:[150,200],
+    writingChecks:[
+      { label:"نقل‌قول غیرمستقیم (said / told … that)", regex:/\b(said|told)\b[^.!?]{0,40}\bthat\b/i },
+    ],
+    grammarTopicId:"b2-reported-speech",
+    readings:[
+      { title:"The Buy Nothing movement — British Council B2 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/b2/buy-nothing-movement" },
+      { title:"The sharing economy — British Council B2 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/b2/sharing-economy" },
+      { title:"World Oceans Day — British Council Magazine Zone", url:"https://learnenglish.britishcouncil.org/general-english/magazine-zone/world-oceans-day" },
+    ]},
+  { num:4, month:1, title:"رسانه، فیلم و کتاب",
+    speaking:"بیان فرضیات خلاف واقع گذشته درباره یک تصمیم یا اتفاق (Third Conditional)",
+    writingPrompt:"درباره یک اتفاق گذشته بنویسید و اینکه اگه فرق می‌کرد چی می‌شد (۱۵۰ تا ۲۰۰ کلمه) — از Third Conditional (If + had + past participle, would have + past participle) استفاده کنید.",
+    writingWordRange:[150,200],
+    writingChecks:[
+      { label:"Third Conditional (If + had + p.p. … would have + p.p.)", regex:/\bif\b[^.!?]{0,60}\bhad\b[^.!?]{0,60}\b(would|could|might)\s+have\b/i },
+    ],
+    grammarTopicId:"b2-conditionals-3-mixed",
+    readings:[
+      { title:"A Plastic Ocean: a film review — British Council B2 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/b2/plastic-ocean-film-review" },
+      { title:"Star Wars and the hero myth — British Council B2 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/b2/star-wars-hero-myth" },
+      { title:"Why bridges collapse — British Council B2 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/b2/why-bridges-collapse" },
+    ],
+    selfTest:"خودآزمایی ۱: متن ناآشنای «Asteroids» رو زمان‌دار بخونید و در ۲ دقیقه شفاهی خلاصه کنید — ضبط رو نگه دارید تا هفته ۸.",
+    selfTestReading:{ title:"Asteroids — British Council B2 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/b2/asteroids" } },
+  { num:5, month:2, title:"فرهنگ و جشن‌ها",
+    speaking:"توصیف یک جشن یا سنت فرهنگی با جمله‌واره‌های موصولی (Relative Clauses)",
+    writingPrompt:"یک جشن یا سنت فرهنگی که می‌شناسید رو توصیف کنید (۱۵۰ تا ۲۰۰ کلمه) — از جمله‌واره‌های موصولی (who/which/that/where) برای توضیح بیشتر استفاده کنید.",
+    writingWordRange:[150,200],
+    writingChecks:[
+      { label:"جمله‌واره موصولی (who / which / that / where)", regex:/\b(who|which|that|where)\b/i },
+    ],
+    grammarTopicId:"b2-relative-clauses",
+    readings:[
+      { title:"Nowruz — British Council Magazine Zone", url:"https://learnenglish.britishcouncil.org/general-english/magazine-zone/nowruz" },
+      { title:"Easter — British Council Magazine Zone", url:"https://learnenglish.britishcouncil.org/general-english/magazine-zone/easter" },
+      { title:"Saint Patrick's Day — British Council Magazine Zone", url:"https://learnenglish.britishcouncil.org/general-english/magazine-zone/saint-patricks-day" },
+    ]},
+  { num:6, month:2, title:"اجتماع و عدالت",
+    speaking:"بیان حدس و قطعیت درباره موضوعات اجتماعی با مودال‌های استنتاج (must/might/could/can't)",
+    writingPrompt:"درباره یک موضوع اجتماعی نظرتون رو بنویسید (۱۵۰ تا ۲۰۰ کلمه) — از must/might/could/can't برای بیان حدس و قطعیت استفاده کنید.",
+    writingWordRange:[150,200],
+    writingChecks:[
+      { label:"مودال حدس/قطعیت (must/might/could/can't + be یا have)", regex:/\b(must|might|could|can't)\s+(be|have)\b/i },
+    ],
+    grammarTopicId:"b2-modals-deduction",
+    readings:[
+      { title:"International Women's Day — British Council Magazine Zone", url:"https://learnenglish.britishcouncil.org/general-english/magazine-zone/international-womens-day" },
+      { title:"World Day against Trafficking in Persons — British Council Magazine Zone", url:"https://learnenglish.britishcouncil.org/general-english/magazine-zone/world-day-against-trafficking-persons" },
+      { title:"UN World Refugee Day — British Council Magazine Zone", url:"https://learnenglish.britishcouncil.org/general-english/magazine-zone/un-world-refugee-day" },
+    ]},
+  { num:7, month:2, title:"داستان‌گویی پیشرفته",
+    speaking:"تمرین Storytelling پیشرفته با ساختارهای Gerund و Infinitive",
+    writingPrompt:"یک داستان کوتاه بنویسید (۱۸۰ تا ۲۲۰ کلمه) — حداقل یک فعل+Gerund (enjoy doing) و یک فعل+Infinitive (decide to do) به‌کار ببرید.",
+    writingWordRange:[180,220],
+    writingChecks:[
+      { label:"فعل + Gerund (enjoy/avoid/finish/keep + فعل‌ing)", regex:/\b(enjoy|avoid|finish|keep|suggest)\s+\w+ing\b/i },
+      { label:"فعل + Infinitive (decide/want/plan/hope + to)", regex:/\b(decide|want|plan|hope|manage)\s+to\s+\w+/i },
+    ],
+    grammarTopicId:"b2-gerunds-infinitives",
+    readings:[
+      { title:"A walk in the forest (B2) — LearnEnglish Teens", url:"https://learnenglishteens.britishcouncil.org/study-break/reading-zone/b2-graded-reading/walk-forest-b2" },
+      { title:"Rumpelstiltskin: a modern retelling (B2) — LearnEnglish Teens", url:"https://learnenglishteens.britishcouncil.org/study-break/reading-zone/b2-graded-reading/rumpelstiltskin-modern-retelling-b2" },
+      { title:"Mystery train (B2) — LearnEnglish Teens", url:"https://learnenglishteens.britishcouncil.org/study-break/reading-zone/b2-graded-reading/mystery-train-b2" },
+    ]},
+  { num:8, month:2, title:"جمع‌بندی نهایی",
+    speaking:"ضبط یک پادکست کوتاه ۳ دقیقه‌ای جمع‌بندی از موضوعات دو ماه با حروف ربط پیشرفته",
+    writingPrompt:"یک جمع‌بندی ۲۰۰ کلمه‌ای بنویسید از مهم‌ترین چیزی که در این دو ماه یاد گرفتید — از حروف ربط پیشرفته (however, although, despite, as a result, in addition) استفاده کنید.",
+    writingWordRange:[180,220],
+    writingChecks:[
+      { label:"حروف ربط پیشرفته (however/although/despite/as a result/in addition)", regex:/\b(however|although|despite|as a result|in addition|nevertheless)\b/i },
+    ],
+    grammarTopicId:"b2-linking-words",
+    readings:[
+      { title:"The Hunger Games: book review (B2) — LearnEnglish Teens", url:"https://learnenglishteens.britishcouncil.org/study-break/reading-zone/b2-graded-reading/hunger-games-book-review-b2" },
+      { title:"The Life of Pi: book review (B2) — LearnEnglish Teens", url:"https://learnenglishteens.britishcouncil.org/study-break/reading-zone/b2-graded-reading/life-pi-book-review-b2" },
+      { title:"The only thing to fear is … (B2) — LearnEnglish Teens", url:"https://learnenglishteens.britishcouncil.org/study-break/reading-zone/b2-graded-reading/only-thing-fear-b2" },
+    ],
+    selfTest:"خودآزمایی ۲: متن ناآشنای «Bully» رو با همون قالب هفته ۴ بخونید، سپس دو ضبط (هفته ۴ و ۸) رو کنار هم گوش بدید و تفاوت روانی و پیچیدگی جمله‌ها رو یادداشت کنید.",
+    selfTestReading:{ title:"Bully (B2) — LearnEnglish Teens", url:"https://learnenglishteens.britishcouncil.org/study-break/reading-zone/b2-graded-reading/bully-b2" } },
+]},
+};
+const LEVEL_ORDER = ["A2","B1","B2"];
+function currentWeeks(){ return LEVELS[currentLevel].weeks; }
+function totalSessions(){ return currentWeeks().length * 4; }
 
 /* ---------------- Story Book data (verified free B1-level sources) ---------------- */
 const STORIES = [
@@ -849,6 +1140,316 @@ const STORIES = [
   { title:"کتابخونه رایگان English e-Reader — رمان‌های ساده‌شده سطح Intermediate", level:"B1+", source:"English e-Reader", url:"https://english-e-reader.net/level/intermediate" },
 ];
 
+/* ---------------- Grammar curriculum (A2 -> C1) ---------------- */
+const GRAMMAR_TOPICS = [
+{ id:`a2-present-simple`, level:`A2`, title:`Present Simple — زمان حال ساده`,
+  explanation:`از Present Simple برای کارهای روتین، عادت‌ها، حقایق کلی و برنامه‌های ثابت (مثل زمان‌بندی وسایل نقلیه) استفاده می‌کنیم. برای سوم‌شخص مفرد (he/she/it) به فعل -s یا -es اضافه می‌کنیم. منفی با don't/doesn't و سؤال با do/does ساخته می‌شه. معمولاً با قیدهای تکرار مثل always, usually, often, sometimes, never همراهه.`,
+  examples:[`I play football every Sunday.`,`She works in a hospital.`,`The train leaves at 8 o'clock.`,`They don't like coffee.`,`Does he speak French?`],
+  exercises:[
+    { type:`mcq`, q:`She ___ to school every day.`, options:[`go`,`goes`,`going`,`went`], correct:1 },
+    { type:`mcq`, q:`___ you like pizza?`, options:[`Do`,`Does`,`Are`,`Is`], correct:0 },
+    { type:`fill`, q:`He ___ (not/work) on Sundays.`, answer:`doesn't work`, accept:[`does not work`] },
+    { type:`mcq`, q:`My sister ___ three languages.`, options:[`speak`,`speaks`,`speaking`,`spoke`], correct:1 },
+    { type:`fill`, q:`___ your parents live near you? (با do/does سؤالی بسازید)`, answer:`Do`, accept:[] },
+  ]},
+{ id:`a2-present-continuous`, level:`A2`, title:`Present Continuous — زمان حال استمراری`,
+  explanation:`از Present Continuous (am/is/are + فعل‌ing) برای کارهایی که همین الان در حال انجامه یا برای برنامه‌های موقت این روزها استفاده می‌کنیم. فعل‌های حالت (state verbs) مثل know, like, want معمولاً با این زمان نمیان.`,
+  examples:[`I am reading a book right now.`,`She is studying for her exam this week.`,`They are watching TV at the moment.`,`We aren't working today.`],
+  exercises:[
+    { type:`mcq`, q:`Look! It ___ (rain).`, options:[`rains`,`is raining`,`rain`,`rained`], correct:1 },
+    { type:`fill`, q:`She ___ (study) English this year.`, answer:`is studying` },
+    { type:`mcq`, q:`I ___ dinner right now.`, options:[`cook`,`cooks`,`am cooking`,`cooked`], correct:2 },
+    { type:`fill`, q:`منفی از «They are playing football.» رو بنویسید.`, answer:`They aren't playing football.`, accept:[`They are not playing football.`] },
+    { type:`mcq`, q:`کدوم فعل معمولاً با Continuous نمیاد؟`, options:[`run`,`know`,`eat`,`walk`], correct:1 },
+  ]},
+{ id:`a2-past-simple`, level:`A2`, title:`Past Simple — زمان گذشته ساده`,
+  explanation:`Past Simple برای کارهای تمام‌شده در گذشته با زمان مشخص به‌کار می‌ره. فعل باقاعده: +ed. فعل بی‌قاعده باید حفظ بشه (go→went, see→saw, have→had). منفی: did not/didn't + فعل ساده. سؤال: did + فاعل + فعل ساده.`,
+  examples:[`I visited my grandmother last weekend.`,`She went to Paris in 2019.`,`They didn't finish the project.`,`Did you watch the movie?`],
+  exercises:[
+    { type:`mcq`, q:`I ___ (see) that film last night.`, options:[`see`,`saw`,`seen`,`sees`], correct:1 },
+    { type:`fill`, q:`She ___ (not/go) to work yesterday.`, answer:`didn't go`, accept:[`did not go`] },
+    { type:`mcq`, q:`___ they arrive on time?`, options:[`Do`,`Did`,`Does`,`Were`], correct:1 },
+    { type:`fill`, q:`He ___ (have) a great time at the party.`, answer:`had` },
+    { type:`mcq`, q:`کدوم فعل بی‌قاعده‌ست؟`, options:[`played`,`wanted`,`went`,`walked`], correct:2 },
+  ]},
+{ id:`a2-can-could`, level:`A2`, title:`can / could — توانایی و درخواست`,
+  explanation:`can برای توانایی یا اجازه در زمان حال، could برای توانایی در گذشته یا درخواست مؤدبانه‌تر به‌کار می‌ره. بعد از can/could همیشه فعل ساده بدون to میاد.`,
+  examples:[`I can swim very well.`,`She can't drive.`,`When I was young, I could run fast.`,`Could you help me, please?`],
+  exercises:[
+    { type:`mcq`, q:`I ___ speak three languages.`, options:[`can`,`cans`,`canning`,`could to`], correct:0 },
+    { type:`fill`, q:`___ you play the piano when you were a child?`, answer:`Could` },
+    { type:`mcq`, q:`She can ___ a bike.`, options:[`rides`,`to ride`,`ride`,`rode`], correct:2 },
+    { type:`fill`, q:`منفی از «He can swim.» رو بنویسید.`, answer:`He can't swim.`, accept:[`He cannot swim.`] },
+    { type:`mcq`, q:`کدوم درخواست مؤدبانه‌تره؟`, options:[`Give me water.`,`Could you give me some water, please?`,`Water now.`,`I want water.`], correct:1 },
+  ]},
+{ id:`a2-going-to-future`, level:`A2`, title:`be going to — آینده برنامه‌ریزی‌شده`,
+  explanation:`از be going to برای برنامه‌ها و تصمیم‌های از قبل گرفته‌شده برای آینده استفاده می‌کنیم. ساختار: am/is/are + going to + فعل ساده.`,
+  examples:[`I am going to visit my friend tomorrow.`,`She is going to start a new job.`,`They aren't going to come to the party.`,`Are you going to travel this summer?`],
+  exercises:[
+    { type:`mcq`, q:`We ___ going to watch a movie tonight.`, options:[`is`,`am`,`are`,`be`], correct:2 },
+    { type:`fill`, q:`She ___ (go to/study) medicine next year.`, answer:`is going to study` },
+    { type:`mcq`, q:`___ you going to call her?`, options:[`Do`,`Are`,`Is`,`Does`], correct:1 },
+    { type:`fill`, q:`منفی از «They are going to travel.» رو بنویسید.`, answer:`They aren't going to travel.`, accept:[`They are not going to travel.`] },
+    { type:`mcq`, q:`کدوم جمله درباره یه برنامه‌ی از قبل تصمیم‌گرفته‌شده‌ست؟`, options:[`I go to Paris.`,`I went to Paris.`,`I'm going to go to Paris next month.`,`I have gone to Paris.`], correct:2 },
+  ]},
+{ id:`a2-comparatives`, level:`A2`, title:`Comparatives & Superlatives — صفت تفضیلی و عالی`,
+  explanation:`برای صفت‌های کوتاه (یک هجا) به آخرش -er اضافه می‌کنیم (bigger)، برای صفت‌های بلند از more استفاده می‌کنیم (more interesting). صفت عالی: the -est یا the most. بعد از comparative از than استفاده می‌کنیم.`,
+  examples:[`This book is more interesting than that one.`,`She is taller than her brother.`,`It's the best day of my life.`,`This is the most expensive restaurant in town.`],
+  exercises:[
+    { type:`mcq`, q:`This car is ___ (fast) than mine.`, options:[`fast`,`faster`,`fastest`,`more fast`], correct:1 },
+    { type:`fill`, q:`She is the ___ (tall) student in the class.`, answer:`tallest` },
+    { type:`mcq`, q:`This film is ___ (interesting) than the last one.`, options:[`interestinger`,`more interesting`,`most interesting`,`interesting`], correct:1 },
+    { type:`fill`, q:`Today is ___ (good) day of the year!`, answer:`the best` },
+    { type:`mcq`, q:`کدوم غلطه؟`, options:[`more bigger`,`bigger`,`the biggest`,`big`], correct:0 },
+  ]},
+{ id:`a2-countable-uncountable`, level:`A2`, title:`Countable & Uncountable Nouns — اسم قابل و غیرقابل‌شمارش`,
+  explanation:`اسم‌های قابل‌شمارش (book, apple) با a/an و به‌صورت جمع میان؛ غیرقابل‌شمارش (water, rice, information) جمع بسته نمی‌شن. some معمولاً در جملات مثبت، any در منفی/سؤالی به‌کار می‌ره. much با غیرقابل‌شمارش، many با قابل‌شمارش، a lot of با هر دو.`,
+  examples:[`There is some milk in the fridge.`,`Do we have any eggs?`,`I don't have much time today.`,`She has many friends.`],
+  exercises:[
+    { type:`mcq`, q:`There isn't ___ sugar left.`, options:[`many`,`much`,`a`,`some`], correct:1 },
+    { type:`fill`, q:`We have ___ (many/much) apples.`, answer:`many` },
+    { type:`mcq`, q:`Is there ___ water in the bottle?`, options:[`some`,`any`,`much`,`many`], correct:1 },
+    { type:`fill`, q:`I'd like ___ information about the course.`, answer:`some` },
+    { type:`mcq`, q:`کدوم غیرقابل‌شمارشه؟`, options:[`book`,`rice`,`apple`,`chair`], correct:1 },
+  ]},
+{ id:`a2-prepositions`, level:`A2`, title:`Prepositions of Time & Place — حروف اضافه زمان و مکان`,
+  explanation:`in برای ماه/سال/فصل و مکان‌های بزرگ (in June, in London)، on برای روزها و تاریخ‌ها و سطح (on Monday, on the table)، at برای ساعت دقیق و مکان‌های خاص (at 6 o'clock, at the door).`,
+  examples:[`I was born in 2000.`,`The meeting is on Monday.`,`See you at 7 o'clock.`,`She lives in London, on Baker Street.`],
+  exercises:[
+    { type:`mcq`, q:`I have a meeting ___ Monday.`, options:[`in`,`on`,`at`,`by`], correct:1 },
+    { type:`fill`, q:`The film starts ___ 8 o'clock.`, answer:`at` },
+    { type:`mcq`, q:`She was born ___ July.`, options:[`on`,`at`,`in`,`by`], correct:2 },
+    { type:`fill`, q:`He lives ___ New York.`, answer:`in` },
+    { type:`mcq`, q:`کدوم درسته؟`, options:[`at Monday`,`in 7 o'clock`,`on the table`,`at London`], correct:2 },
+  ]},
+
+{ id:`b1-present-tenses-review`, level:`B1`, title:`Present Simple vs Continuous (مرور عمیق‌تر)`,
+  explanation:`فرق دقیق Present Simple (عادت/حقیقت دائمی) و Present Continuous (کاری موقت یا در حال وقوع) در B1 مهم‌تر می‌شه. فعل‌های حالت (state verbs: like, know, believe, want, own) معمولاً با Continuous نمیان، حتی اگه معنی «الان» بدن. always+Continuous برای شکایت از یه عادت آزاردهنده به‌کار می‌ره.`,
+  examples:[`I usually walk to work, but today I'm taking the bus.`,`She knows the answer. (not "is knowing")`,`He is always losing his keys!`,`They live in Berlin at the moment.`],
+  exercises:[
+    { type:`mcq`, q:`I ___ (believe) you.`, options:[`am believing`,`believe`,`believed`,`will believe`], correct:1 },
+    { type:`fill`, q:`She ___ (usually/have) lunch at noon.`, answer:`usually has` },
+    { type:`mcq`, q:`Look! He ___ (always/lose) his keys!`, options:[`always loses`,`is always losing`,`always lost`,`loses always`], correct:1 },
+    { type:`fill`, q:`I ___ (want) to leave now.`, answer:`want` },
+    { type:`mcq`, q:`کدوم فعل، فعل حالت (state verb) هست؟`, options:[`run`,`own`,`eat`,`dance`], correct:1 },
+  ]},
+{ id:`b1-past-tenses`, level:`B1`, title:`Past Simple vs Past Continuous + آینده`,
+  explanation:`Past Continuous (was/were + فعل‌ing) برای کاری که در حال انجام بود وقتی چیز دیگه‌ای اتفاق افتاد، یا دو کار هم‌زمان در گذشته به‌کار می‌ره؛ معمولاً با when/while میاد. برای آینده: will برای تصمیم لحظه‌ای یا پیش‌بینی، going to برای برنامه از قبل تصمیم‌گرفته‌شده.`,
+  examples:[`I was watching TV when she called.`,`While I was cooking, he was cleaning the house.`,`I think it will rain tomorrow.`,`I'm going to study medicine. (a decided plan)`],
+  exercises:[
+    { type:`mcq`, q:`I ___ (watch) TV when the phone rang.`, options:[`watch`,`watched`,`was watching`,`am watching`], correct:2 },
+    { type:`fill`, q:`While she was cooking, he ___ (clean) the house.`, answer:`was cleaning` },
+    { type:`mcq`, q:`کدوم برای تصمیم لحظه‌ای درسته؟`, options:[`I'm going to answer it.`,`I'll answer it.`,`I answer it.`,`I answered it.`], correct:1 },
+    { type:`fill`, q:`It's decided — I ___ (study) medicine next year.`, answer:`am going to study` },
+    { type:`mcq`, q:`When I arrived, she ___ (wait) for me.`, options:[`wait`,`waited`,`was waiting`,`is waiting`], correct:2 },
+  ]},
+{ id:`b1-cause-effect`, level:`B1`, title:`because / so — بیان علت و نتیجه`,
+  explanation:`because قبل از دلیل میاد (I stayed home because it was raining)، so قبل از نتیجه میاد (It was raining, so I stayed home). دقت کنید because و so جمله رو به هم وصل می‌کنن؛ نباید هر دو رو با هم برای یه رابطه استفاده کنید.`,
+  examples:[`I was tired, so I went to bed early.`,`I went to bed early because I was tired.`,`She passed the exam because she studied hard.`,`It was cold, so we wore coats.`],
+  exercises:[
+    { type:`mcq`, q:`I stayed home ___ it was raining.`, options:[`so`,`because`,`but`,`and`], correct:1 },
+    { type:`fill`, q:`She was hungry, ___ she made a sandwich.`, answer:`so` },
+    { type:`mcq`, q:`کدوم جمله درسته؟`, options:[`Because it was late, so I left.`,`It was late, so I left.`,`I left, because so it was late.`,`So it was late, I left.`], correct:1 },
+    { type:`fill`, q:`He failed the test ___ he didn't study.`, answer:`because` },
+    { type:`mcq`, q:`The shop was closed, ___ we went home.`, options:[`because`,`so`,`why`,`so that`], correct:1 },
+  ]},
+{ id:`b1-agree-disagree`, level:`B1`, title:`Agreeing & Disagreeing — موافقت و مخالفت`,
+  explanation:`برای موافقت: I agree, I think so too, That's true, Exactly. برای مخالفت مؤدبانه: I don't think so, I'm not sure about that, I see your point, but... . بهتره بعد از این عبارات دلیلتون رو هم بگید.`,
+  examples:[`I agree that exercise is important.`,`I don't think that's completely true.`,`I see your point, but I think differently.`,`That's a good point, actually.`],
+  exercises:[
+    { type:`mcq`, q:`کدوم عبارت موافقته؟`, options:[`I don't think so.`,`I completely agree.`,`I'm not sure.`,`That's not right.`], correct:1 },
+    { type:`fill`, q:`I ___ that social media can be harmful.`, answer:`agree`, accept:[`think`] },
+    { type:`mcq`, q:`کدوم مخالفت مؤدبانه‌ست؟`, options:[`You're wrong.`,`That's stupid.`,`I see your point, but I disagree.`,`No way.`], correct:2 },
+    { type:`fill`, q:`___ think that's a good idea. (مخالفت مؤدبانه با «من فکر نمی‌کنم»)`, answer:`I don't`, accept:[`I do not`] },
+    { type:`mcq`, q:`بهترین پاسخ به «I think homework is useless» کدومه؟`, options:[`No.`,`I disagree — I think it helps students practice.`,`Whatever.`,`That's wrong.`], correct:1 },
+  ]},
+{ id:`b1-advice-comparatives`, level:`B1`, title:`should / could + Comparatives پیشرفته`,
+  explanation:`should برای توصیه (فکر می‌کنید کار درستیه)، could برای پیشنهاد ملایم‌تر (یه گزینه، نه اجبار)، must قوی‌تره و اجبار/ضرورت نشون می‌ده. در مقایسه‌ها می‌تونید much/a lot/a bit قبل از comparative بیارید برای تأکید (much better, a bit faster).`,
+  examples:[`You should see a doctor.`,`You could try yoga to relax.`,`This laptop is much faster than my old one.`,`It's a bit more expensive, but worth it.`],
+  exercises:[
+    { type:`mcq`, q:`You ___ study more if you want to pass.`, options:[`should`,`is`,`can to`,`must to`], correct:0 },
+    { type:`fill`, q:`This restaurant is ___ (much/better) than the other one.`, answer:`much better` },
+    { type:`mcq`, q:`کدوم پیشنهاد ملایم‌تره؟`, options:[`You must exercise.`,`You could try exercising.`,`You have to exercise.`,`Exercise now.`], correct:1 },
+    { type:`fill`, q:`You ___ (should/not/eat) so much sugar.`, answer:`shouldn't eat`, accept:[`should not eat`] },
+    { type:`mcq`, q:`This phone is ___ expensive than that one.`, options:[`much`,`more`,`most`,`very`], correct:1 },
+  ]},
+{ id:`b1-used-to-present-perfect`, level:`B1`, title:`used to + Present Perfect`,
+  explanation:`used to برای عادت‌ها یا وضعیت‌هایی که در گذشته بودن ولی الان نیستن به‌کار می‌ره (I used to smoke, but I quit). Present Perfect (have/has + قسمت سوم فعل) برای تجربه‌ها یا کارهایی که تا الان انجام شدن و زمان دقیقش مهم نیست به‌کار می‌ره.`,
+  examples:[`I used to live in Tokyo.`,`She didn't use to like coffee.`,`I have visited five countries.`,`Have you ever tried sushi?`],
+  exercises:[
+    { type:`mcq`, q:`I ___ play football when I was a kid.`, options:[`use to`,`used to`,`am used to`,`was used`], correct:1 },
+    { type:`fill`, q:`___ you ever ___ (be) to Japan? (با Have بسازید)`, answer:`Have ... been` },
+    { type:`mcq`, q:`کدوم جمله درباره یه عادت گذشته‌ست که الان دیگه نیست؟`, options:[`I have lived here for 5 years.`,`I used to live in a small village.`,`I live in a big city.`,`I am living here now.`], correct:1 },
+    { type:`fill`, q:`She ___ (not/use to) drink coffee, but now she loves it.`, answer:`didn't use to` },
+    { type:`mcq`, q:`I ___ finished my homework.`, options:[`have`,`has`,`had to`,`am`], correct:0 },
+  ]},
+{ id:`b1-storytelling-sequencing`, level:`B1`, title:`Narrative Tenses & Sequencing — روایت و ترتیب رویدادها`,
+  explanation:`برای روایت داستان از Past Simple برای رویدادهای اصلی استفاده می‌کنیم، و از کلمات ربط زمانی (first, then, after that, next, finally) برای نشون‌دادن ترتیب. Past Continuous برای توصیف پس‌زمینه (background) به‌کار می‌ره.`,
+  examples:[`First, I woke up. Then, I had breakfast.`,`After that, we went to the park.`,`Finally, we arrived home, tired but happy.`,`While the sun was setting, we walked along the beach.`],
+  exercises:[
+    { type:`mcq`, q:`___ , I got up. Then I got dressed.`, options:[`Finally`,`First`,`After`,`Later`], correct:1 },
+    { type:`fill`, q:`We had lunch. ___ , we watched a movie.`, answer:`After that`, accept:[`Then`,`Next`] },
+    { type:`mcq`, q:`کدوم برای پایان داستان مناسب‌تره؟`, options:[`First`,`Then`,`Finally`,`After`], correct:2 },
+    { type:`fill`, q:`While the birds ___ (sing), we drank our coffee.`, answer:`were singing` },
+    { type:`mcq`, q:`ترتیب درست کدومه؟`, options:[`Finally, then, first`,`First, then, finally`,`Then, first, finally`,`First, finally, then`], correct:1 },
+  ]},
+{ id:`b1-mixed-review`, level:`B1`, title:`مرور ترکیبی گرامر B1`,
+  explanation:`مرور ترکیبی گرامرهای B1: زمان‌ها، شرطی نوع اول، مودال‌ها، و ساختارهای مقایسه‌ای. این تمرین همه رو با هم قاطی می‌کنه تا مطمئن بشید می‌تونید بین‌شون درست انتخاب کنید.`,
+  examples:[`If it rains tomorrow, I will stay home. (First Conditional)`,`I have been to Italy twice.`,`She should study more.`,`This is the most beautiful place I've ever seen.`],
+  exercises:[
+    { type:`mcq`, q:`If it ___ tomorrow, we will cancel the trip.`, options:[`rain`,`rains`,`rained`,`will rain`], correct:1 },
+    { type:`fill`, q:`I ___ (never/be) to Australia.`, answer:`have never been` },
+    { type:`mcq`, q:`You ___ wear a seatbelt — it's the law.`, options:[`could`,`should`,`might`,`would`], correct:1 },
+    { type:`fill`, q:`This is ___ (interesting) book I've ever read.`, answer:`the most interesting` },
+    { type:`mcq`, q:`کدوم جمله First Conditional هست؟`, options:[`If I have time, I will call you.`,`If I had time, I would call you.`,`If I had had time, I would have called you.`,`I have time, I call you.`], correct:0 },
+  ]},
+
+{ id:`b2-present-perfect-continuous`, level:`B2`, title:`Present Perfect Continuous`,
+  explanation:`Present Perfect Continuous (have/has been + فعل‌ing) روی طول‌مدت یه فعالیت که هنوز ادامه داره یا همین تازه تموم شده و اثرش الان مشخصه تأکید می‌کنه؛ با for/since میاد. فرقش با Present Perfect ساده اینه که ساده روی نتیجه/تعداد دفعات تمرکز داره، Continuous روی خودِ فرآیند و مدت‌زمان.`,
+  examples:[`I have been studying English for three years.`,`She has been working here since 2020.`,`Why are you tired? — I've been running.`,`I have read three books this month. (نتیجه/تعداد، نه فرآیند)`],
+  exercises:[
+    { type:`mcq`, q:`I ___ (study) English for three years.`, options:[`study`,`have studied`,`have been studying`,`studied`], correct:2 },
+    { type:`fill`, q:`She ___ (work) here since 2020.`, answer:`has been working` },
+    { type:`mcq`, q:`Why are your clothes dirty? — I ___ (fix) the car.`, options:[`fixed`,`have fixed`,`have been fixing`,`fix`], correct:2 },
+    { type:`fill`, q:`How long ___ you ___ (wait)?`, answer:`have ... been waiting` },
+    { type:`mcq`, q:`کدوم روی «تعداد دفعات» تمرکز داره نه فرآیند؟`, options:[`I have been reading this book.`,`I have read five books this year.`,`I have been writing my novel.`,`I have been cooking all day.`], correct:1 },
+  ]},
+{ id:`b2-passive-voice`, level:`B2`, title:`Passive Voice — جمله مجهول`,
+  explanation:`در جمله مجهول، مفعول جمله معلوم به فاعل جمله مجهول تبدیل می‌شه: be (در زمان مناسب) + قسمت سوم فعل. وقتی انجام‌دهنده کار مهم نیست یا معلوم نیست از مجهول استفاده می‌کنیم (مثل اخبار، توضیحات علمی).`,
+  examples:[`The book was written by a famous author.`,`English is spoken in many countries.`,`The bridge is being built this year.`,`The report has been finished.`],
+  exercises:[
+    { type:`mcq`, q:`The letter ___ yesterday.`, options:[`sent`,`was sent`,`is sending`,`has send`], correct:1 },
+    { type:`fill`, q:`English ___ (speak) in many countries.`, answer:`is spoken` },
+    { type:`mcq`, q:`This house ___ in 1990.`, options:[`built`,`was built`,`builds`,`is build`], correct:1 },
+    { type:`fill`, q:`The project ___ (already/finish).`, answer:`has already been finished` },
+    { type:`mcq`, q:`کدوم جمله مجهوله؟`, options:[`She wrote the letter.`,`The letter was written by her.`,`She is writing the letter.`,`She will write the letter.`], correct:1 },
+  ]},
+{ id:`b2-reported-speech`, level:`B2`, title:`Reported Speech — نقل‌قول غیرمستقیم`,
+  explanation:`در نقل‌قول غیرمستقیم، زمان فعل یک پله به عقب برمی‌گرده (present→past, past→past perfect) و ضمایر/قیدهای زمان تغییر می‌کنن (today→that day, tomorrow→the next day). فعل‌های رایج: said (that), told someone (that).`,
+  examples:[`"I am tired," she said. → She said (that) she was tired.`,`"I will call you," he said. → He said he would call me.`,`"I saw him yesterday," she said. → She said she had seen him the day before.`,`He told me that he was busy.`],
+  exercises:[
+    { type:`mcq`, q:`"I am happy," she said. → She said ___`, options:[`she is happy`,`she was happy`,`she has been happy`,`she will be happy`], correct:1 },
+    { type:`fill`, q:`"I will help you," he said. → He said he ___ help me.`, answer:`would` },
+    { type:`mcq`, q:`کدوم فعل با «told» درسته؟`, options:[`He told that he was tired.`,`He told me that he was tired.`,`He said me that he was tired.`,`He tells me he was tired.`], correct:1 },
+    { type:`fill`, q:`"I saw her yesterday," he said. → He said he ___ (see) her the day before.`, answer:`had seen` },
+    { type:`mcq`, q:`"I am working," she said. → She said she ___ working.`, options:[`is`,`was`,`has been`,`will be`], correct:1 },
+  ]},
+{ id:`b2-conditionals-3-mixed`, level:`B2`, title:`Third & Mixed Conditionals`,
+  explanation:`Third Conditional (If + Past Perfect, would have + قسمت سوم) برای فرضیات خلاف واقع درباره گذشته به‌کار می‌ره. Mixed Conditional وقتی شرط مربوط به گذشته‌ست ولی نتیجه‌ش روی حال تأثیر داره (If + Past Perfect, would + فعل ساده).`,
+  examples:[`If I had studied harder, I would have passed the exam.`,`If she had left earlier, she wouldn't have missed the train.`,`If I hadn't taken that job, I wouldn't be here now. (Mixed)`,`If you had told me, I would know now. (Mixed)`],
+  exercises:[
+    { type:`mcq`, q:`If I ___ (know), I would have told you.`, options:[`knew`,`had known`,`know`,`would know`], correct:1 },
+    { type:`fill`, q:`If she ___ (study) harder, she would have passed.`, answer:`had studied` },
+    { type:`mcq`, q:`کدوم Mixed Conditional هست؟`, options:[`If it rains, I will stay home.`,`If I had known, I would have come.`,`If I hadn't missed the bus, I would be at work now.`,`If I study, I pass.`], correct:2 },
+    { type:`fill`, q:`If they ___ (leave) earlier, they wouldn't have missed the flight.`, answer:`had left` },
+    { type:`mcq`, q:`If you ___ me, I would have helped.`, options:[`asked`,`had asked`,`ask`,`would ask`], correct:1 },
+  ]},
+{ id:`b2-relative-clauses`, level:`B2`, title:`Relative Clauses — جمله‌واره موصولی`,
+  explanation:`جمله‌واره موصولی توضیح اضافه درباره اسم قبلیش می‌ده. who برای آدم‌ها، which برای چیزها، that برای هر دو (غیررسمی)، where برای مکان. جمله‌واره تعریفی (defining) بدون کاما و لازمه؛ غیرتعریفی (non-defining) با کاما میاد و فقط اطلاعات اضافه‌ست.`,
+  examples:[`The woman who lives next door is a doctor.`,`This is the book which I told you about.`,`My brother, who lives in Canada, is visiting us.`,`That's the restaurant where we met.`],
+  exercises:[
+    { type:`mcq`, q:`The man ___ called you is my uncle.`, options:[`which`,`who`,`where`,`whose`], correct:1 },
+    { type:`fill`, q:`This is the house ___ I grew up.`, answer:`where` },
+    { type:`mcq`, q:`My sister, ___ lives in Paris, is a chef.`, options:[`that`,`who`,`which`,`where`], correct:1 },
+    { type:`fill`, q:`The book ___ I'm reading is amazing.`, answer:`which`, accept:[`that`] },
+    { type:`mcq`, q:`کدوم غیرتعریفیه (non-defining)؟`, options:[`The man who called is my friend.`,`My father, who is 60, still works.`,`The book that I read was boring.`,`People who smoke should quit.`], correct:1 },
+  ]},
+{ id:`b2-modals-deduction`, level:`B2`, title:`Modals of Deduction — مودال‌های حدس و قطعیت`,
+  explanation:`برای حدس‌زدن درباره حال از must (مطمئنیم درسته)، might/could (شاید)، can't (مطمئنیم غلطه) + فعل ساده استفاده می‌کنیم. برای گذشته: must have/might have/can't have + قسمت سوم فعل.`,
+  examples:[`He must be tired — he worked all night.`,`She might be at home now.`,`That can't be true!`,`They must have left already — the lights are off.`],
+  exercises:[
+    { type:`mcq`, q:`He's not answering — he ___ be asleep.`, options:[`must`,`can`,`could to`,`is`], correct:0 },
+    { type:`fill`, q:`She ___ (must/leave) — her coat isn't here.`, answer:`must have left` },
+    { type:`mcq`, q:`کدوم برای «مطمئنیم غلطه» به‌کار می‌ره؟`, options:[`must`,`might`,`can't`,`could`], correct:2 },
+    { type:`fill`, q:`They ___ (might/be) on holiday — I'm not sure.`, answer:`might be` },
+    { type:`mcq`, q:`The light is on — someone ___ be home.`, options:[`must`,`can't`,`mustn't`,`might not`], correct:0 },
+  ]},
+{ id:`b2-gerunds-infinitives`, level:`B2`, title:`Gerunds vs Infinitives`,
+  explanation:`بعضی فعل‌ها با Gerund (فعل‌ing) میان (enjoy, avoid, finish, suggest, keep)، بعضی با Infinitive (to + فعل) میان (decide, want, plan, hope, manage). بعضی فعل‌ها با هر دو میان ولی معنی فرق می‌کنه (stop doing در برابر stop to do).`,
+  examples:[`I enjoy reading before bed.`,`She decided to study abroad.`,`He stopped smoking. (سیگار رو ترک کرد)`,`He stopped to smoke. (وایساد که سیگار بکشه)`],
+  exercises:[
+    { type:`mcq`, q:`I enjoy ___ (read) novels.`, options:[`read`,`to read`,`reading`,`reads`], correct:2 },
+    { type:`fill`, q:`She decided ___ (study) medicine.`, answer:`to study` },
+    { type:`mcq`, q:`He avoided ___ (answer) the question.`, options:[`answer`,`to answer`,`answering`,`answered`], correct:2 },
+    { type:`fill`, q:`They plan ___ (travel) next year.`, answer:`to travel` },
+    { type:`mcq`, q:`کدوم معنی «سیگار رو ترک کرد» می‌ده؟`, options:[`He stopped to smoke.`,`He stopped smoking.`,`He stops smoke.`,`He stopping smoke.`], correct:1 },
+  ]},
+{ id:`b2-linking-words`, level:`B2`, title:`Advanced Linking Words — حروف ربط پیشرفته`,
+  explanation:`حروف ربط پیشرفته برای نوشتن روان‌تر: however/nevertheless (تضاد، معمولاً ابتدای جمله با کاما)، although/though (تضاد، وسط جمله)، despite/in spite of (+ اسم یا فعل‌ing)، as a result/therefore (نتیجه)، in addition/moreover (اضافه‌کردن نکته).`,
+  examples:[`The weather was bad. However, we enjoyed the trip.`,`Although it was raining, we went for a walk.`,`Despite the rain, we went for a walk.`,`The traffic was heavy; as a result, we were late.`],
+  exercises:[
+    { type:`mcq`, q:`___ it was expensive, she bought it.`, options:[`Despite`,`Although`,`However`,`So`], correct:1 },
+    { type:`fill`, q:`He didn't study. ___ , he failed the exam.`, answer:`As a result`, accept:[`Therefore`] },
+    { type:`mcq`, q:`بعد از despite چی میاد؟`, options:[`یه جمله کامل`,`اسم یا فعل‌ing`,`هیچی`,`فقط صفت`], correct:1 },
+    { type:`fill`, q:`___ the rain, we went for a walk.`, answer:`Despite`, accept:[`In spite of`] },
+    { type:`mcq`, q:`کدوم برای اضافه‌کردن نکته‌ست؟`, options:[`However`,`Moreover`,`Although`,`Despite`], correct:1 },
+  ]},
+
+{ id:`c1-inversion`, level:`C1`, title:`Inversion for Emphasis — وارونگی برای تأکید`,
+  explanation:`در انگلیسی رسمی/پیشرفته، برای تأکید می‌تونیم فعل کمکی رو قبل از فاعل بیاریم (inversion)، وقتی جمله با عبارات منفی/محدودکننده شروع بشه: Never, Rarely, Not only, No sooner, Hardly.`,
+  examples:[`Never have I seen such a beautiful place.`,`Not only did she win the race, but she also broke the record.`,`Rarely do we see such dedication.`,`Hardly had I arrived when the phone rang.`],
+  exercises:[
+    { type:`mcq`, q:`Never ___ such a mess.`, options:[`I have seen`,`have I seen`,`I saw`,`did I saw`], correct:1 },
+    { type:`fill`, q:`Not only ___ (she/win) the race, but she also broke the record.`, answer:`did she win` },
+    { type:`mcq`, q:`کدوم inversion درسته؟`, options:[`Rarely he comes here.`,`Rarely does he come here.`,`Rarely he does come here.`,`He rarely does come here.`], correct:1 },
+    { type:`fill`, q:`Hardly ___ (I/arrive) when it started raining.`, answer:`had I arrived` },
+    { type:`mcq`, q:`این ساختارها بیشتر برای چه سبکی مناسبن؟`, options:[`محاوره خیلی خودمونی`,`نوشتار رسمی و تأکیدی`,`پیام کوتاه`,`دستور آشپزی`], correct:1 },
+  ]},
+{ id:`c1-cleft-sentences`, level:`C1`, title:`Cleft Sentences — جمله‌های شکافته`,
+  explanation:`جمله‌های شکافته برای تأکید روی یه بخش خاص از جمله به‌کار می‌رن. الگوی رایج: It is/was + بخش موردتأکید + that/who... یا What + فعل + is/was + ...`,
+  examples:[`It was John who broke the window. (تأکید روی John)`,`It is the price that worries me. (تأکید روی price)`,`What I need is more time.`,`What surprised me was her honesty.`],
+  exercises:[
+    { type:`mcq`, q:`___ was Maria who called you.`, options:[`It`,`What`,`This`,`There`], correct:0 },
+    { type:`fill`, q:`___ I really need is a good night's sleep.`, answer:`What` },
+    { type:`mcq`, q:`کدوم روی «pizza» تأکید داره؟`, options:[`I ate pizza for lunch.`,`It was pizza that I ate for lunch.`,`I had lunch.`,`Pizza is food.`], correct:1 },
+    { type:`fill`, q:`It ___ the weather that ruined our trip.`, answer:`was` },
+    { type:`mcq`, q:`ساختار «What surprised me was...» چه نقشی داره؟`, options:[`سؤال ساده`,`تأکید روی چیزی که تعجب‌آور بود`,`زمان گذشته ساده`,`جمله شرطی`], correct:1 },
+  ]},
+{ id:`c1-advanced-passive-reporting`, level:`C1`, title:`Advanced Passive Reporting Structures`,
+  explanation:`در نوشتار رسمی/خبری، برای گزارش عقاید عمومی از ساختارهایی مثل «It is said that...» یا «He is believed to be...» استفاده می‌کنیم، به‌جای گفتن مستقیم چه کسی این حرف رو زده.`,
+  examples:[`It is said that the company will close.`,`He is believed to have left the country.`,`The building is thought to be over 200 years old.`,`She is reported to have won the award.`],
+  exercises:[
+    { type:`mcq`, q:`It ___ that the economy will improve.`, options:[`says`,`is said`,`said`,`saying`], correct:1 },
+    { type:`fill`, q:`He ___ (believe/leave) the city already.`, answer:`is believed to have left` },
+    { type:`mcq`, q:`معادل «People say he is rich» کدومه؟`, options:[`He says he is rich.`,`He is said to be rich.`,`He is saying rich.`,`Rich is said he.`], correct:1 },
+    { type:`fill`, q:`The painting ___ (think/be) very valuable.`, answer:`is thought to be` },
+    { type:`mcq`, q:`این ساختارها بیشتر در چه سبکی به‌کار می‌رن؟`, options:[`چت دوستانه`,`اخبار و نوشتار رسمی`,`شعر`,`دستور آشپزی`], correct:1 },
+  ]},
+{ id:`c1-subjunctive-wish`, level:`C1`, title:`Subjunctive & wish / if only`,
+  explanation:`برای آرزو درباره حال از wish + Past Simple استفاده می‌کنیم (I wish I knew)، برای آرزو درباره گذشته از wish + Past Perfect (I wish I had known)، و برای شکایت از یه رفتار از wish + would (I wish you would stop). حالت subjunctive رسمی هم بعد از افعالی مثل suggest/recommend/insist میاد: I suggest that he go (نه goes).`,
+  examples:[`I wish I knew the answer.`,`I wish I had studied harder.`,`I wish you would stop shouting.`,`The doctor recommended that she rest for a week.`],
+  exercises:[
+    { type:`mcq`, q:`I wish I ___ more time.`, options:[`have`,`had`,`will have`,`having`], correct:1 },
+    { type:`fill`, q:`I wish I ___ (study) harder when I was young.`, answer:`had studied` },
+    { type:`mcq`, q:`I wish you ___ interrupt me!`, options:[`don't`,`won't`,`wouldn't`,`didn't`], correct:2 },
+    { type:`fill`, q:`The manager insisted that everyone ___ (be) on time.`, answer:`be` },
+    { type:`mcq`, q:`کدوم درباره آرزو در گذشته‌ست؟`, options:[`I wish I knew.`,`I wish I had known.`,`I wish I know.`,`I wish I will know.`], correct:1 },
+  ]},
+{ id:`c1-participle-clauses`, level:`C1`, title:`Participle Clauses — جمله‌واره‌های وصفی`,
+  explanation:`جمله‌واره‌های وصفی با فعل‌ing یا قسمت سوم فعل، جمله رو کوتاه‌تر و روان‌تر می‌کنن، معمولاً به‌جای جمله‌واره‌های زمانی/علّی/موصولی به‌کار می‌رن.`,
+  examples:[`Feeling tired, she went to bed early. (= Because she felt tired...)`,`Walking down the street, I saw an old friend. (= While I was walking...)`,`Written in 1990, the book is still popular. (= which was written...)`,`Having finished his homework, he watched TV.`],
+  exercises:[
+    { type:`mcq`, q:`___ tired, she went to bed.`, options:[`Feel`,`Felt`,`Feeling`,`Feels`], correct:2 },
+    { type:`fill`, q:`___ (write) in 1990, the novel is still famous.`, answer:`Written` },
+    { type:`mcq`, q:`معادل «Because she didn't have money, she couldn't travel» کدومه؟`, options:[`Not having money, she couldn't travel.`,`Not have money, she couldn't travel.`,`Having not money, she couldn't travel.`,`No having money, she couldn't travel.`], correct:0 },
+    { type:`fill`, q:`___ (finish) his work, he left the office.`, answer:`Having finished` },
+    { type:`mcq`, q:`جمله‌واره وصفی معمولاً جایگزین چی می‌شه؟`, options:[`فقط اسم`,`جمله‌واره زمانی/علّی/موصولی`,`فقط صفت`,`فقط قید`], correct:1 },
+  ]},
+{ id:`c1-discourse-markers`, level:`C1`, title:`Advanced Discourse Markers — نشانگرهای گفتمان پیشرفته`,
+  explanation:`نشانگرهای گفتمان پیشرفته به سازمان‌دهی متن رسمی کمک می‌کنن: to begin with (شروع)، furthermore/moreover (اضافه‌کردن)، on the other hand (مقابله)، consequently (نتیجه)، in conclusion/to sum up (جمع‌بندی).`,
+  examples:[`To begin with, let's look at the causes.`,`Furthermore, the data supports this theory.`,`On the other hand, some experts disagree.`,`To sum up, the plan has both benefits and risks.`],
+  exercises:[
+    { type:`mcq`, q:`کدوم برای شروع مقاله مناسبه؟`, options:[`Consequently`,`To begin with`,`On the other hand`,`In conclusion`], correct:1 },
+    { type:`fill`, q:`___ , we should consider the environmental impact too.`, answer:`Furthermore`, accept:[`Moreover`] },
+    { type:`mcq`, q:`کدوم برای مقابله/تضاده؟`, options:[`Moreover`,`On the other hand`,`Furthermore`,`In addition`], correct:1 },
+    { type:`fill`, q:`___ , the project was a success.`, answer:`To sum up`, accept:[`In conclusion`] },
+    { type:`mcq`, q:`consequently معادل کدومه؟`, options:[`however`,`as a result`,`although`,`for example`], correct:1 },
+  ]},
+];
+const GRAMMAR_LEVEL_ORDER = ["A2","B1","B2","C1"];
+function grammarTopicsForLevel(level){ return GRAMMAR_TOPICS.filter(t => t.level === level); }
+function findGrammarTopic(id){ return GRAMMAR_TOPICS.find(t => t.id === id); }
+
 /* ---------------- Storage (localStorage) ---------------- */
 function storageGet(key){
   try{ return localStorage.getItem(key); }
@@ -860,18 +1461,26 @@ function storageSet(key, value){
 }
 
 /* ---------------- State ---------------- */
-let progress = null; // { weeks: [ {sessions:[{done,words,note}x3], friday:{done,note}} x8 ] }
+let currentLevel = 'B1';
+let allProgress = {}; // { A2: {weeks:[...]}, B1: {weeks:[...]}, B2: {weeks:[...]} }
+let progress = null; // pointer to allProgress[currentLevel] — { weeks: [ {sessions:[{done,words,note}x3], friday:{done,note}} x8 ] }
 let vocab = [];
 let openWeek = null;
 let storiesRead = {}; // { [url]: true }
 
-function defaultProgress(){
-  return { weeks: WEEKS.map(() => ({
+function defaultProgress(level){
+  return { weeks: LEVELS[level].weeks.map(() => ({
     sessions: [0,1,2].map(() => ({ done:false, words:'', note:'' })),
     friday: { done:false, note:'' },
     listening: [0,1,2].map(() => ({ done:false, notes:'' })),
     writing: { done:false, text:'', feedback:'', feedbackSource:'' }
   })) };
+}
+
+function defaultAllProgress(){
+  const o = {};
+  LEVEL_ORDER.forEach(lv => { o[lv] = defaultProgress(lv); });
+  return o;
 }
 
 function migrateProgress(p){
@@ -881,6 +1490,19 @@ function migrateProgress(p){
     if(w.writing.feedbackSource === undefined) w.writing.feedbackSource = '';
   });
   return p;
+}
+
+function migrateAllProgress(raw){
+  let obj;
+  if(raw && raw.weeks){
+    // old single-level (B1-only) shape
+    obj = { B1: migrateProgress(raw) };
+  } else {
+    obj = raw || {};
+    LEVEL_ORDER.forEach(lv => { if(obj[lv]) obj[lv] = migrateProgress(obj[lv]); });
+  }
+  LEVEL_ORDER.forEach(lv => { if(!obj[lv]) obj[lv] = defaultProgress(lv); });
+  return obj;
 }
 
 function migrateVocabSRS(list){
@@ -896,9 +1518,15 @@ function migrateVocabSRS(list){
 
 async function loadState(){
   try{
+    const lv = storageGet('current-level');
+    currentLevel = (lv && LEVELS[JSON.parse(lv)]) ? JSON.parse(lv) : 'B1';
+  }catch(e){ currentLevel = 'B1'; }
+
+  try{
     const p = storageGet('study-progress');
-    progress = p ? migrateProgress(JSON.parse(p)) : defaultProgress();
-  }catch(e){ progress = defaultProgress(); }
+    allProgress = migrateAllProgress(p ? JSON.parse(p) : null);
+  }catch(e){ allProgress = defaultAllProgress(); }
+  progress = allProgress[currentLevel];
 
   try{
     const v = storageGet('vocab-bank');
@@ -919,6 +1547,7 @@ async function loadState(){
   renderWriting();
   renderStories();
   renderFlashcards();
+  renderGrammar();
 
   await loadSyncSettings();
   renderSyncBox();
@@ -931,8 +1560,23 @@ async function saveStoriesRead(){
 }
 
 async function saveProgress(){
-  storageSet('study-progress', JSON.stringify(progress));
+  storageSet('study-progress', JSON.stringify(allProgress));
   schedulePushToCloud();
+}
+
+function switchLevel(level){
+  if(!LEVELS[level] || level === currentLevel) return;
+  currentLevel = level;
+  progress = allProgress[currentLevel];
+  storageSet('current-level', JSON.stringify(currentLevel));
+  openWeek = null;
+  render();
+  rebuildFocusPhases();
+  initChatDefaults();
+  initListeningDefaults();
+  renderWriting();
+  flashSessionStarted = false;
+  renderFlashcards();
 }
 async function saveVocab(){
   storageSet('vocab-bank', JSON.stringify(vocab));
@@ -976,28 +1620,43 @@ function currentWeekIndex(){
 
 /* ---------------- Rendering ---------------- */
 function render(){
+  renderLevelRow();
   renderDashboard();
   renderWeeks();
   renderVocab();
   renderStories();
 }
 
+function renderLevelRow(){
+  const row = document.getElementById('level-row');
+  if(!row) return;
+  row.innerHTML = '';
+  LEVEL_ORDER.forEach(lv => {
+    const b = document.createElement('button');
+    b.className = 'level-btn' + (lv === currentLevel ? ' active' : '');
+    b.textContent = LEVELS[lv].label;
+    b.addEventListener('click', () => switchLevel(lv));
+    row.appendChild(b);
+  });
+  document.getElementById('app-title').textContent = `مسیر دوماهه انگلیسی — سطح ${currentLevel}`;
+}
+
 function renderDashboard(){
   const done = countDone();
-  const pct = Math.round((done / TOTAL_SESSIONS) * 100);
+  const pct = Math.round((done / totalSessions()) * 100);
   document.getElementById('pct-text').textContent = pct + '%';
   const circumference = 2 * Math.PI * 52;
   const offset = circumference - (pct/100)*circumference;
   document.getElementById('ring-fg').style.strokeDasharray = circumference.toFixed(0);
   document.getElementById('ring-fg').style.strokeDashoffset = offset.toFixed(0);
 
-  document.getElementById('stat-sessions').textContent = `${done}/${TOTAL_SESSIONS}`;
-  document.getElementById('stat-weeks').textContent = `${weeksFullyDone()}/8`;
+  document.getElementById('stat-sessions').textContent = `${done}/${totalSessions()}`;
+  document.getElementById('stat-weeks').textContent = `${weeksFullyDone()}/${currentWeeks().length}`;
   document.getElementById('stat-words').textContent = vocab.length;
-  document.getElementById('stat-listening').textContent = `${countListeningDone()}/${WEEKS.length*3}`;
+  document.getElementById('stat-listening').textContent = `${countListeningDone()}/${currentWeeks().length*3}`;
   document.getElementById('stat-stories').textContent = `${countStoriesRead()}/${STORIES.length}`;
   document.getElementById('stat-due').textContent = countDueCards();
-  document.getElementById('stat-writing').textContent = `${countWritingDone()}/${WEEKS.length}`;
+  document.getElementById('stat-writing').textContent = `${countWritingDone()}/${currentWeeks().length}`;
 
   const headlines = [
     'بزن بریم شروع کنیم',
@@ -1013,11 +1672,24 @@ function renderDashboard(){
   document.getElementById('dash-headline').textContent = pct===0 ? headlines[0] : headlines[Math.max(hIdx,1)];
 
   const cwIdx = currentWeekIndex();
-  const wk = WEEKS[cwIdx];
+  const wk = currentWeeks()[cwIdx];
   const wp = progress.weeks[cwIdx];
   document.getElementById('cw-title').textContent = `هفته ${wk.num} در جریان`;
   document.getElementById('cw-month').textContent = wk.month === 1 ? 'ماه اول' : 'ماه دوم';
   document.getElementById('cw-theme').textContent = wk.title;
+
+  const gWrap = document.getElementById('cw-grammar-link');
+  gWrap.innerHTML = '';
+  if(wk.grammarTopicId){
+    const gTopic = findGrammarTopic(wk.grammarTopicId);
+    if(gTopic){
+      const gLink = document.createElement('button');
+      gLink.className = 'grammar-week-link';
+      gLink.textContent = `🔤 گرامر این هفته: ${gTopic.title} ←`;
+      gLink.addEventListener('click', () => openGrammarTopicById(wk.grammarTopicId));
+      gWrap.appendChild(gLink);
+    }
+  }
 
   const sessWrap = document.getElementById('cw-sessions');
   sessWrap.innerHTML = '';
@@ -1089,7 +1761,7 @@ function buildFridayRow(weekIdx, fridayObj, wk){
 function renderWeeks(){
   const wrap = document.getElementById('weeks-container');
   wrap.innerHTML = '';
-  WEEKS.forEach((wk, idx) => {
+  currentWeeks().forEach((wk, idx) => {
     const wp = progress.weeks[idx];
     const doneCount = wp.sessions.filter(s=>s.done).length + (wp.friday.done?1:0);
     const fullyDone = doneCount === 4;
@@ -1114,6 +1786,17 @@ function renderWeeks(){
     info.className = 'week-info';
     info.innerHTML = `<strong>Speaking:</strong> ${wk.speaking}`;
     detail.appendChild(info);
+
+    if(wk.grammarTopicId){
+      const gTopic = findGrammarTopic(wk.grammarTopicId);
+      if(gTopic){
+        const gLink = document.createElement('button');
+        gLink.className = 'grammar-week-link';
+        gLink.textContent = `🔤 گرامر این هفته: ${gTopic.title} ←`;
+        gLink.addEventListener('click', () => openGrammarTopicById(wk.grammarTopicId));
+        detail.appendChild(gLink);
+      }
+    }
 
     const sessList = document.createElement('div');
     sessList.className = 'sess-list';
@@ -1280,7 +1963,7 @@ function beep(freq){
 
 function rebuildFocusPhases(){
   const cwIdx = currentWeekIndex();
-  const weekNum = WEEKS[cwIdx].num;
+  const weekNum = currentWeeks()[cwIdx].num;
   focusPhases = getPhases(focusSessionType, focusPrefs.mode, weekNum);
   focusIdx = 0;
   focusRunning = false;
@@ -1523,7 +2206,7 @@ function initChatDefaults(){
 }
 
 function currentChatTopic(){
-  return WEEKS[chatWeekIdx].readings[chatSessIdx];
+  return currentWeeks()[chatWeekIdx].readings[chatSessIdx];
 }
 
 function startNewChat(){
@@ -1535,7 +2218,7 @@ function startNewChat(){
 }
 
 function renderChat(){
-  const wk = WEEKS[chatWeekIdx];
+  const wk = currentWeeks()[chatWeekIdx];
 
   const keyWrap = document.getElementById('chat-apikey-row');
   keyWrap.innerHTML = '';
@@ -1596,7 +2279,7 @@ async function sendChatMessage(){
     renderChat();
 
     const topic = currentChatTopic();
-    const wk = WEEKS[chatWeekIdx];
+    const wk = currentWeeks()[chatWeekIdx];
     const systemPrompt = `You are a warm, patient English conversation partner helping a Persian-speaking B1-level English learner practice SPEAKING, as part of a structured reading-and-speaking study plan. Today's topic (an article the learner just read) is: "${topic.title}" — part of this week's theme "${wk.title}".
 Rules for every reply:
 - Keep your reply SHORT: 2 to 4 simple sentences, B1-level vocabulary and grammar.
@@ -1696,11 +2379,11 @@ function initListeningDefaults(){
 }
 
 function currentListeningItem(){
-  return WEEKS[listenWeekIdx].readings[listenSessIdx];
+  return currentWeeks()[listenWeekIdx].readings[listenSessIdx];
 }
 
 function renderListening(){
-  const wk = WEEKS[listenWeekIdx];
+  const wk = currentWeeks()[listenWeekIdx];
   const wp = progress.weeks[listenWeekIdx];
   const sessObj = wp.listening[listenSessIdx];
 
@@ -1748,7 +2431,7 @@ function currentWritingWeekIdx(){
 
 function renderWriting(){
   const wIdx = currentWritingWeekIdx();
-  const wk = WEEKS[wIdx];
+  const wk = currentWeeks()[wIdx];
   const wp = progress.weeks[wIdx];
   const wr = wp.writing;
 
@@ -1852,7 +2535,7 @@ function localWritingFeedback(wk, text){
 }
 
 async function requestWritingFeedback(wIdx){
-  const wk = WEEKS[wIdx];
+  const wk = currentWeeks()[wIdx];
   const wp = progress.weeks[wIdx];
   const wr = wp.writing;
   const text = wr.text.trim();
@@ -2058,11 +2741,14 @@ function renderFlashcards(){
 
 /* ================= EXPORT / IMPORT ================= */
 function gatherExportData(){
-  return { exportedAt: new Date().toISOString(), progress, vocab, focusPrefs, storiesRead };
+  return { exportedAt: new Date().toISOString(), currentLevel, allProgress, vocab, focusPrefs, storiesRead };
 }
 
 function applyImportedData(data){
-  if(data.progress) progress = migrateProgress(data.progress);
+  if(data.allProgress) allProgress = migrateAllProgress(data.allProgress);
+  else if(data.progress) allProgress = migrateAllProgress({ B1: data.progress }); // backward-compat with pre-multi-level exports
+  if(data.currentLevel && LEVELS[data.currentLevel]) currentLevel = data.currentLevel;
+  progress = allProgress[currentLevel];
   if(data.vocab) vocab = migrateVocabSRS(data.vocab);
   if(data.focusPrefs) focusPrefs = data.focusPrefs;
   if(data.storiesRead) storiesRead = data.storiesRead;
@@ -2070,7 +2756,8 @@ function applyImportedData(data){
     openRouterApiKey = data.openRouterApiKey;
     storageSet('openrouter-api-key', JSON.stringify(openRouterApiKey));
   }
-  storageSet('study-progress', JSON.stringify(progress));
+  storageSet('current-level', JSON.stringify(currentLevel));
+  storageSet('study-progress', JSON.stringify(allProgress));
   storageSet('vocab-bank', JSON.stringify(vocab));
   storageSet('focus-prefs', JSON.stringify(focusPrefs));
   storageSet('stories-read', JSON.stringify(storiesRead));
@@ -2176,7 +2863,7 @@ async function pushToCloud(){
   syncStatus = 'syncing'; renderSyncBox();
   try{
     await firestoreDb.collection('sync').doc(syncCode).set({
-      progress, vocab, focusPrefs, storiesRead, openRouterApiKey,
+      currentLevel, allProgress, vocab, focusPrefs, storiesRead, openRouterApiKey,
       updatedAt: new Date().toISOString()
     });
     syncStatus = 'synced';
@@ -2263,6 +2950,173 @@ function renderSyncBox(){
       statusEl.className = 'sync-status err';
     }
   }
+}
+
+/* ================= GRAMMAR ================= */
+let grammarLevelFilter = "A2";
+let openGrammarTopicId = null;
+let grammarUserAnswers = {}; // { [topicId]: { [exIdx]: value } }
+let grammarChecked = {}; // { [topicId]: true }
+
+function normalizeAnswer(s){
+  return (s || '').toLowerCase().replace(/[.,!?;:]+$/,'').replace(/\s+/g,' ').trim();
+}
+
+function checkFillAnswer(userInput, ex){
+  const norm = normalizeAnswer(userInput);
+  if(!norm) return false;
+  const candidates = [ex.answer, ...(ex.accept||[])];
+  return candidates.some(ans => {
+    const normAns = normalizeAnswer(ans);
+    if(normAns.includes('...')){
+      const parts = normAns.split('...').map(p => p.trim()).filter(Boolean);
+      let idx = 0;
+      return parts.every(p => {
+        const found = norm.indexOf(p, idx);
+        if(found === -1) return false;
+        idx = found + p.length;
+        return true;
+      });
+    }
+    return norm === normAns;
+  });
+}
+
+function openGrammarTopicById(id){
+  const topic = findGrammarTopic(id);
+  if(!topic) return;
+  grammarLevelFilter = topic.level;
+  openGrammarTopicId = id;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelector('.tab-btn[data-view="grammar"]').classList.add('active');
+  document.getElementById('view-grammar').classList.add('active');
+  renderGrammar();
+  const el = document.getElementById('grammar-topic-' + id);
+  if(el) el.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function renderGrammar(){
+  const levelRow = document.getElementById('grammar-level-row');
+  if(!levelRow) return;
+  levelRow.innerHTML = '';
+  GRAMMAR_LEVEL_ORDER.forEach(lv => {
+    const b = document.createElement('button');
+    b.className = 'grammar-level-btn' + (lv === grammarLevelFilter ? ' active' : '');
+    b.textContent = lv;
+    b.addEventListener('click', () => { grammarLevelFilter = lv; renderGrammar(); });
+    levelRow.appendChild(b);
+  });
+
+  const list = document.getElementById('grammar-list');
+  list.innerHTML = '';
+  const topics = grammarTopicsForLevel(grammarLevelFilter);
+  if(topics.length === 0){
+    list.innerHTML = '<div class="story-empty">موضوعی برای این سطح نیست.</div>';
+    return;
+  }
+
+  topics.forEach(topic => {
+    const item = document.createElement('div');
+    item.className = 'grammar-topic' + (openGrammarTopicId === topic.id ? ' open' : '');
+    item.id = 'grammar-topic-' + topic.id;
+
+    const header = document.createElement('div');
+    header.className = 'grammar-topic-header';
+    header.innerHTML = `<div class="grammar-topic-title">${escapeHtml(topic.title)}</div><div class="chevron">⌄</div>`;
+    header.addEventListener('click', () => {
+      openGrammarTopicId = (openGrammarTopicId === topic.id) ? null : topic.id;
+      renderGrammar();
+    });
+    item.appendChild(header);
+
+    const body = document.createElement('div');
+    body.className = 'grammar-topic-body';
+
+    const expl = document.createElement('div');
+    expl.className = 'grammar-explanation';
+    expl.textContent = topic.explanation;
+    body.appendChild(expl);
+
+    const exList = document.createElement('ul');
+    exList.className = 'grammar-examples';
+    exList.innerHTML = topic.examples.map(e => `<li>${escapeHtml(e)}</li>`).join('');
+    body.appendChild(exList);
+
+    const exTitle = document.createElement('div');
+    exTitle.className = 'grammar-exercise-title';
+    exTitle.textContent = 'تمرین';
+    body.appendChild(exTitle);
+
+    if(!grammarUserAnswers[topic.id]) grammarUserAnswers[topic.id] = {};
+    const answers = grammarUserAnswers[topic.id];
+    const checked = !!grammarChecked[topic.id];
+
+    topic.exercises.forEach((ex, i) => {
+      const exWrap = document.createElement('div');
+      exWrap.className = 'grammar-ex';
+
+      const q = document.createElement('div');
+      q.className = 'grammar-ex-q';
+      q.textContent = `${i+1}. ${ex.q}`;
+      exWrap.appendChild(q);
+
+      if(ex.type === 'mcq'){
+        const opts = document.createElement('div');
+        opts.className = 'grammar-ex-options';
+        ex.options.forEach((opt, oi) => {
+          const label = document.createElement('label');
+          const radio = document.createElement('input');
+          radio.type = 'radio';
+          radio.name = `gq-${topic.id}-${i}`;
+          radio.checked = answers[i] === oi;
+          radio.addEventListener('change', () => { answers[i] = oi; });
+          label.appendChild(radio);
+          label.appendChild(document.createTextNode(opt));
+          opts.appendChild(label);
+        });
+        exWrap.appendChild(opts);
+      } else {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.placeholder = 'جواب رو اینجا بنویسید…';
+        input.value = answers[i] || '';
+        input.addEventListener('input', () => { answers[i] = input.value; });
+        exWrap.appendChild(input);
+      }
+
+      if(checked){
+        const isCorrect = ex.type === 'mcq' ? answers[i] === ex.correct : checkFillAnswer(answers[i], ex);
+        const result = document.createElement('div');
+        result.className = 'grammar-ex-result ' + (isCorrect ? 'correct' : 'wrong');
+        result.textContent = isCorrect ? '✅ درسته' : `❌ جواب درست: ${ex.type === 'mcq' ? ex.options[ex.correct] : ex.answer}`;
+        exWrap.appendChild(result);
+      }
+
+      body.appendChild(exWrap);
+    });
+
+    const checkBtn = document.createElement('button');
+    checkBtn.className = 'btn secondary';
+    checkBtn.style.marginTop = '6px';
+    checkBtn.textContent = 'بررسی جواب‌ها';
+    checkBtn.addEventListener('click', () => {
+      grammarChecked[topic.id] = true;
+      renderGrammar();
+    });
+    body.appendChild(checkBtn);
+
+    if(checked){
+      const score = topic.exercises.reduce((n, ex, i) => n + ((ex.type === 'mcq' ? answers[i] === ex.correct : checkFillAnswer(answers[i], ex)) ? 1 : 0), 0);
+      const scoreEl = document.createElement('div');
+      scoreEl.className = 'grammar-score';
+      scoreEl.textContent = `امتیاز: ${score} از ${topic.exercises.length}`;
+      body.appendChild(scoreEl);
+    }
+
+    item.appendChild(body);
+    list.appendChild(item);
+  });
 }
 
 /* ---------------- Events ---------------- */
