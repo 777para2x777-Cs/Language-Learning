@@ -1,0 +1,10 @@
+{
+  "name": "english-b1-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "مسیر دوماهه انگلیسی — B1 (Reading/Listening/Speaking/Writing tracker), packaged for Android via Capacitor",
+  "scripts": {
+    "sync": "cap sync",
+    "android": "cap open android"
+  }
+}

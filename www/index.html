@@ -1,0 +1,1696 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مسیر دوماهه انگلیسی — B1</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap');
+
+  :root{
+    --bg: #171E2E;
+    --surface: #212A40;
+    --surface-2: #29344E;
+    --paper: #F2ECDC;
+    --paper-line: #E2D9C0;
+    --ink: #F2ECDC;
+    --ink-muted: #A6AFC9;
+    --gold: #E8A544;
+    --gold-deep: #C9862C;
+    --teal: #4FB6AC;
+    --teal-deep: #327A73;
+    --danger: #D96C6C;
+    --radius-s: 10px;
+    --radius-m: 16px;
+    --radius-l: 24px;
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 600px at 85% -10%, #26314A 0%, transparent 60%),
+      var(--bg);
+    color: var(--ink);
+    font-family: 'Vazirmatn', sans-serif;
+    line-height: 1.75;
+    min-height: 100vh;
+  }
+
+  .app{ max-width: 920px; margin: 0 auto; padding: 28px 20px 80px; }
+
+  /* ---------- Header ---------- */
+  .app-header{ margin-bottom: 22px; }
+  .app-header h1{
+    font-size: 26px;
+    font-weight: 800;
+    margin: 0 0 6px;
+    letter-spacing: -0.2px;
+  }
+  .app-header p{
+    margin:0;
+    color: var(--ink-muted);
+    font-size: 14.5px;
+  }
+
+  /* ---------- Tabs ---------- */
+  .tabs{
+    display:flex;
+    gap: 6px;
+    margin: 22px 0 24px;
+    background: var(--surface);
+    padding: 5px;
+    border-radius: var(--radius-m);
+    overflow-x: auto;
+  }
+  .tab-btn{
+    flex: 1;
+    white-space: nowrap;
+    padding: 10px 14px;
+    border: none;
+    border-radius: var(--radius-s);
+    background: transparent;
+    color: var(--ink-muted);
+    font-family: inherit;
+    font-size: 14.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .18s ease, color .18s ease;
+  }
+  .tab-btn.active{ background: var(--gold); color: #1E1404; }
+
+  .view{ display:none; }
+  .view.active{ display:block; animation: fadeIn .25s ease; }
+  @keyframes fadeIn{ from{opacity:0; transform: translateY(4px);} to{opacity:1; transform:none;} }
+
+  /* ---------- Cards ---------- */
+  .card{
+    background: var(--surface);
+    border-radius: var(--radius-l);
+    padding: 22px;
+    margin-bottom: 16px;
+  }
+
+  /* ---------- Dashboard hero ---------- */
+  .hero{
+    display:flex;
+    align-items:center;
+    gap: 26px;
+    flex-wrap: wrap;
+  }
+  .hero-ring{ position: relative; width: 128px; height: 128px; flex-shrink:0; }
+  .hero-ring svg{ width:100%; height:100%; transform: rotate(-90deg); }
+  .hero-ring .pct{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    flex-direction:column;
+  }
+  .hero-ring .pct b{ font-size: 26px; font-weight:800; }
+  .hero-ring .pct span{ font-size: 11px; color: var(--ink-muted); }
+  .hero-copy h2{ margin:0 0 6px; font-size: 19px; font-weight:700; }
+  .hero-copy p{ margin:0; color: var(--ink-muted); font-size:14px; max-width: 40ch; }
+
+  .stat-row{ display:flex; gap:12px; margin-top:18px; flex-wrap: wrap; }
+  .stat{
+    background: var(--surface-2);
+    border-radius: var(--radius-m);
+    padding: 14px 16px;
+    flex: 1;
+    min-width: 120px;
+  }
+  .stat b{ display:block; font-size: 20px; font-weight:800; }
+  .stat span{ color: var(--ink-muted); font-size: 12.5px; }
+
+  /* ---------- Current week card ---------- */
+  .cw-head{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap;}
+  .cw-head h3{ margin:0; font-size:17px; font-weight:700; }
+  .cw-badge{
+    background: var(--gold); color:#1E1404; font-size:12px; font-weight:700;
+    padding:4px 10px; border-radius: 999px;
+  }
+  .cw-theme{ color: var(--ink-muted); font-size: 13.5px; margin: 4px 0 16px; }
+
+  /* ---------- Session checklist items ---------- */
+  .sess-list{ display:flex; flex-direction:column; gap:10px; }
+  .sess{
+    display:flex; align-items:flex-start; gap:12px;
+    background: var(--surface-2);
+    border-radius: var(--radius-m);
+    padding: 12px 14px;
+  }
+  .sess.friday{ border: 1px solid rgba(232,165,68,.35); }
+  .check{
+    width: 24px; height:24px; border-radius:7px; flex-shrink:0; margin-top:2px;
+    border: 2px solid var(--ink-muted); background:transparent; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; color:#1E1404;
+    transition: background .15s, border-color .15s;
+  }
+  .check.on{ background: var(--teal); border-color: var(--teal); }
+  .sess-body{ flex:1; min-width:0; }
+  .sess-title{ font-weight:600; font-size:14.5px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+  .sess-sub{ color: var(--ink-muted); font-size:12.5px; margin-top:2px; }
+  .sess-fields{ display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
+  .sess-fields input[type=number]{ width: 76px; }
+  .sess-fields input, .sess-fields textarea{
+    background: var(--surface);
+    border: 1px solid rgba(166,175,201,.25);
+    border-radius: 8px;
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 13px;
+    padding: 6px 9px;
+  }
+  .sess-fields textarea{ flex:1; min-width: 160px; resize: vertical; min-height: 34px; }
+
+  .speak-line{ font-size:12.5px; color: var(--teal); margin-top:6px; }
+  .speak-details{ margin-top:6px; }
+  .speak-details summary{ font-size:12px; color: var(--ink-muted); cursor:pointer; list-style:none; }
+  .speak-details summary::-webkit-details-marker{ display:none; }
+  .speak-details summary::before{ content:'▸ '; }
+  .speak-details[open] summary::before{ content:'▾ '; }
+  .speak-details ul{ margin:8px 0 0; padding-inline-start:18px; font-size:12px; color: var(--ink-muted); line-height:1.85; }
+
+  /* ---------- Week accordion ---------- */
+  .week-item{ background: var(--surface); border-radius: var(--radius-l); margin-bottom: 12px; overflow:hidden; }
+  .week-summary{
+    display:flex; align-items:center; gap:14px; padding: 16px 20px; cursor:pointer;
+  }
+  .week-num{
+    width:38px; height:38px; border-radius:50%; background: var(--surface-2);
+    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px;
+    flex-shrink:0;
+  }
+  .week-num.done{ background: var(--teal); color:#0B1F1C; }
+  .week-summary-text{ flex:1; min-width:0; }
+  .week-summary-text .wt{ font-weight:700; font-size:15px; }
+  .week-summary-text .ws{ color: var(--ink-muted); font-size:12.5px; margin-top:2px; }
+  .week-progress-mini{ font-size:12.5px; color: var(--gold); font-weight:700; white-space:nowrap; }
+  .chevron{ color: var(--ink-muted); transition: transform .2s; flex-shrink:0; }
+  .week-item.open .chevron{ transform: rotate(180deg); }
+  .week-detail{ display:none; padding: 0 20px 20px; }
+  .week-item.open .week-detail{ display:block; }
+  .week-info{
+    background: var(--surface-2); border-radius: var(--radius-m); padding: 14px 16px; margin-bottom: 14px;
+    font-size: 13.5px; color: var(--ink-muted);
+  }
+  .week-info a{ color: var(--gold); }
+  .self-test-note{
+    margin-top:8px; padding: 10px 12px; border-radius: 10px;
+    background: rgba(232,165,68,.12); border: 1px dashed rgba(232,165,68,.4);
+    font-size: 12.5px; color: var(--ink);
+  }
+
+  /* ---------- Vocab ---------- */
+  .vocab-form{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px; }
+  .vocab-form input{
+    background: var(--surface-2); border:1px solid rgba(166,175,201,.25); border-radius: var(--radius-s);
+    color: var(--ink); font-family:inherit; padding: 10px 12px; font-size:14px;
+  }
+  .vocab-form input#v-word{ flex: 1 1 140px; }
+  .vocab-form input#v-meaning{ flex: 1 1 140px; }
+  .vocab-form input#v-example{ flex: 2 1 220px; }
+  .btn{
+    border:none; border-radius: var(--radius-s); padding: 10px 18px; font-family:inherit;
+    font-weight:700; font-size:14px; cursor:pointer; background: var(--gold); color:#1E1404;
+  }
+  .btn.secondary{ background: var(--surface-2); color: var(--ink); }
+  .btn.danger{ background: transparent; color: var(--danger); border:1px solid rgba(217,108,108,.4); }
+
+  .vocab-card{
+    background: var(--paper); color:#2A2210; border-radius: var(--radius-m);
+    padding: 14px 16px; margin-bottom: 10px; display:flex; gap:14px; align-items:flex-start;
+  }
+  .vocab-word{ position:relative; display:inline-block; font-weight:800; font-size: 15.5px; }
+  .vocab-word::after{
+    content:""; position:absolute; right:-2px; left:-2px; bottom:1px; height:7px;
+    background: rgba(232,165,68,.55); z-index:-1; border-radius:2px;
+  }
+  .vocab-meaning{ font-size: 13.5px; margin-top:4px; }
+  .vocab-example{ font-size: 12.5px; color:#6B5E3A; margin-top:4px; font-style: italic; }
+  .vocab-meta{ display:flex; flex-direction:column; gap:6px; align-items:flex-end; flex-shrink:0; }
+  .vocab-reviewed{ font-size: 11px; color:#6B5E3A; }
+  .vocab-actions{ display:flex; gap:6px; }
+  .icon-btn{
+    border:none; background: rgba(0,0,0,.08); border-radius: 7px; width:26px; height:26px;
+    cursor:pointer; font-size:13px; display:flex; align-items:center; justify-content:center;
+  }
+  .icon-btn.reviewed{ background: var(--teal); color:#0B1F1C; }
+  .empty{ color: var(--ink-muted); font-size: 13.5px; text-align:center; padding: 30px 10px; }
+
+  /* ---------- Resources ---------- */
+  .res-card{
+    background: var(--surface); border-radius: var(--radius-l); padding: 18px 20px; margin-bottom: 12px;
+    border-right: 3px solid var(--teal);
+  }
+  .res-card h4{ margin:0 0 6px; font-size:15.5px; font-weight:700; }
+  .res-card p{ margin:0 0 10px; color: var(--ink-muted); font-size: 13.5px; }
+  .res-card a{ color: var(--gold); font-size: 13px; font-weight:600; text-decoration:none; }
+  .res-card a:hover{ text-decoration:underline; }
+
+  .foot-actions{ text-align:center; margin-top: 26px; }
+  .foot-actions button{ background:none; border:none; color: var(--ink-muted); font-size:12.5px; cursor:pointer; text-decoration:underline; font-family:inherit; }
+
+  /* ---------- Focus / Pomodoro timer ---------- */
+  .mode-toggle{ display:flex; gap:8px; margin-bottom:14px; }
+  .mode-btn{
+    flex:1; padding:10px; border-radius: var(--radius-s); border:1px solid rgba(166,175,201,.25);
+    background: var(--surface-2); color: var(--ink-muted); font-family:inherit; font-size:13px; font-weight:600; cursor:pointer;
+  }
+  .mode-btn.active{ background: var(--teal); color:#0B1F1C; border-color: transparent; }
+  .mode-hint{ font-size:12px; color: var(--ink-muted); margin: -6px 0 16px; }
+
+  .timer-card{ text-align:center; padding: 28px 22px; }
+  .phase-name{ font-size:15.5px; font-weight:700; color: var(--gold); margin-bottom:6px; }
+  .timer-digits{ font-size: 52px; font-weight:800; letter-spacing:1px; font-variant-numeric: tabular-nums; margin: 4px 0 14px; }
+  .phase-dots{ display:flex; justify-content:center; gap:7px; margin-bottom:20px; }
+  .phase-dot{ width:9px; height:9px; border-radius:50%; background: var(--surface-2); }
+  .phase-dot.done{ background: var(--teal); }
+  .phase-dot.current{ background: var(--gold); width:22px; border-radius:5px; }
+  .timer-controls{ display:flex; justify-content:center; gap:10px; }
+  .timer-controls button{
+    border:none; border-radius: 999px; padding: 12px 22px; font-family:inherit; font-weight:700; font-size:14px; cursor:pointer;
+  }
+  .btn-start{ background: var(--gold); color:#1E1404; }
+  .btn-pause{ background: var(--surface-2); color: var(--ink); }
+  .btn-skip{ background: transparent; color: var(--ink-muted); border:1px solid rgba(166,175,201,.25); }
+
+  .guidance-box{ text-align:right; margin-top:20px; background: var(--surface-2); border-radius: var(--radius-m); padding:16px 18px; }
+  .guidance-box h4{ margin:0 0 10px; font-size:14px; font-weight:700; color: var(--ink); }
+  .guidance-box ul{ margin:0; padding-inline-start:20px; font-size:13px; color: var(--ink-muted); line-height:1.9; }
+  .guidance-box .prog-note{ margin-top:10px; font-size:12px; color: var(--gold); }
+
+  .session-type-row{ display:flex; gap:8px; margin-bottom:16px; }
+  .session-type-row button{
+    flex:1; padding:9px; border-radius: var(--radius-s); border:1px solid rgba(166,175,201,.25);
+    background:transparent; color: var(--ink-muted); font-family:inherit; font-size:13px; cursor:pointer;
+  }
+  .session-type-row button.active{ background: var(--surface-2); color: var(--gold); border-color: var(--gold); }
+
+  .done-banner{ text-align:center; padding: 10px 0 4px; }
+  .done-banner p{ color: var(--ink-muted); font-size:13.5px; margin: 0 0 14px; }
+
+  /* ---------- AI Conversation (Speaking) ---------- */
+  .session-pill-row{ display:flex; gap:6px; margin-bottom:12px; }
+  .session-pill{
+    flex:1; padding:8px; border-radius: var(--radius-s); border:1px solid rgba(166,175,201,.25);
+    background:transparent; color: var(--ink-muted); font-family:inherit; font-size:12.5px; cursor:pointer; text-align:center;
+  }
+  .session-pill.active{ background: var(--surface-2); color: var(--gold); border-color: var(--gold); }
+
+  .chat-topline{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:12px; flex-wrap:wrap; }
+  .chat-topic-title{ font-size:14px; font-weight:700; }
+  .chat-topic-link{ font-size:12px; color: var(--gold); text-decoration:none; }
+  .chat-toggle-btn{
+    background:none; border:1px solid rgba(166,175,201,.25); color: var(--ink-muted); border-radius:999px;
+    padding:6px 13px; font-size:12px; cursor:pointer; font-family:inherit; white-space:nowrap;
+  }
+  .chat-toggle-btn.active{ background: var(--teal); color:#0B1F1C; border-color: transparent; }
+
+  .chat-window{
+    height: 360px; overflow-y:auto; background: var(--surface-2); border-radius: var(--radius-m);
+    padding:14px; display:flex; flex-direction:column; gap:10px;
+  }
+  .msg{ display:flex; }
+  .msg.user{ justify-content:flex-end; }
+  .msg.ai{ justify-content:flex-start; }
+  .bubble{ max-width:78%; padding:10px 13px; border-radius:14px; font-size:14px; line-height:1.6; }
+  .msg.user .bubble{ background: var(--gold); color:#1E1404; border-bottom-right-radius:4px; }
+  .msg.ai .bubble{ background: var(--surface); color: var(--ink); border-bottom-left-radius:4px; }
+  .msg.typing .bubble{ opacity:.6; font-style:italic; }
+
+  .chat-input-row{ display:flex; gap:8px; margin-top:12px; }
+  .chat-input-row input[type=text]{
+    flex:1; background: var(--surface-2); border:1px solid rgba(166,175,201,.25); border-radius: var(--radius-s);
+    color: var(--ink); font-family:inherit; padding:11px 13px; font-size:14px; text-align:left;
+  }
+  .chat-input-row input[type=text]:disabled{ opacity:.6; }
+  .mic-btn{
+    width:44px; flex-shrink:0; border-radius:50%; border:none; background: var(--surface-2);
+    color: var(--ink-muted); cursor:pointer; font-size:16px;
+  }
+  .mic-btn.listening{ background: var(--danger); color:#fff; animation: mic-pulse 1s infinite; }
+  @keyframes mic-pulse{ 0%,100%{opacity:1;} 50%{opacity:.5;} }
+  .send-btn{
+    background: var(--gold); color:#1E1404; border:none; border-radius: var(--radius-s);
+    padding:0 18px; font-weight:700; cursor:pointer; font-family:inherit; flex-shrink:0;
+  }
+  .send-btn:disabled{ opacity:.6; cursor:default; }
+
+  /* ---------- API key box (shared: Conversation + Writing) ---------- */
+  .api-key-row{
+    display:flex; gap:8px; align-items:center; flex-wrap:wrap;
+    background: var(--surface-2); border-radius: var(--radius-m); padding: 10px 12px; margin-bottom:14px;
+  }
+  .api-key-row input{
+    flex: 1 1 220px; background: var(--surface); border:1px solid rgba(166,175,201,.25); border-radius: var(--radius-s);
+    color: var(--ink); font-family:inherit; padding: 9px 11px; font-size:13px; direction:ltr;
+  }
+  .api-key-status{ font-size:13px; color: var(--ink-muted); }
+  .link-btn{ background:none; border:none; color: var(--gold); font-size:12.5px; cursor:pointer; text-decoration:underline; font-family:inherit; padding:0; }
+  .api-key-hint{ font-size:11.5px; color: var(--ink-muted); margin: -8px 0 14px; }
+
+  /* ---------- Listening ---------- */
+  .listen-steps{ margin:12px 0 0; padding-inline-start:18px; font-size:13px; color: var(--ink-muted); line-height:1.9; }
+  .listen-notes{ margin-top:14px; }
+  .listen-notes textarea{
+    width:100%; background: var(--surface-2); border:1px solid rgba(166,175,201,.25); border-radius: var(--radius-s);
+    color: var(--ink); font-family:inherit; font-size:13.5px; padding:10px 12px; min-height:80px; resize:vertical;
+  }
+  .listen-done-row{ display:flex; align-items:center; gap:10px; margin-top:12px; }
+
+  /* ---------- Writing ---------- */
+  .write-prompt{ background: var(--surface-2); border-radius: var(--radius-m); padding:14px 16px; font-size:13.5px; color: var(--ink); margin-bottom:14px; }
+  .write-prompt b{ color: var(--gold); }
+  .write-textarea{
+    width:100%; min-height:180px; background: var(--surface-2); border:1px solid rgba(166,175,201,.25); border-radius: var(--radius-m);
+    color: var(--ink); font-family:inherit; font-size:14px; line-height:1.8; padding:12px 14px; resize:vertical; direction:ltr; text-align:left;
+  }
+  .write-meta-row{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:10px; flex-wrap:wrap; }
+  .write-count{ font-size:12px; color: var(--ink-muted); }
+  .write-actions{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .feedback-card{
+    background: var(--paper); color:#2A2210; border-radius: var(--radius-m); padding:14px 16px; margin-top:16px;
+    font-size:13.5px; line-height:1.85; white-space:pre-wrap;
+  }
+  .feedback-card h4{ margin:0 0 8px; font-size:13.5px; font-weight:800; color:#6B5E3A; }
+
+  ::selection{ background: var(--gold); color:#1E1404; }
+  @media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="app-header">
+    <h1>مسیر دوماهه انگلیسی — سطح B1</h1>
+    <p>تمرکز روی هر چهار مهارت: Reading، Listening، Speaking و Writing · ۳ جلسه در هفته + جمع‌بندی جمعه‌ها</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-view="dashboard">داشبورد</button>
+    <button class="tab-btn" data-view="focus">تمرکز</button>
+    <button class="tab-btn" data-view="conversation">مکالمه</button>
+    <button class="tab-btn" data-view="listening">شنیداری</button>
+    <button class="tab-btn" data-view="writing">نوشتاری</button>
+    <button class="tab-btn" data-view="plan">برنامه هفتگی</button>
+    <button class="tab-btn" data-view="vocab">دایره واژگان</button>
+    <button class="tab-btn" data-view="resources">منابع</button>
+  </div>
+
+  <!-- ===================== DASHBOARD ===================== -->
+  <div class="view active" id="view-dashboard">
+    <div class="card hero">
+      <div class="hero-ring">
+        <svg viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="52" stroke="#333F5C" stroke-width="12" fill="none"/>
+          <circle id="ring-fg" cx="60" cy="60" r="52" stroke="#E8A544" stroke-width="12" fill="none"
+                  stroke-linecap="round" stroke-dasharray="327" stroke-dashoffset="327"/>
+        </svg>
+        <div class="pct"><b id="pct-text">0%</b><span>پیشرفت کل</span></div>
+      </div>
+      <div class="hero-copy">
+        <h2 id="dash-headline">بزن بریم شروع کنیم</h2>
+        <p id="dash-sub">هر جلسه‌ای که تیک می‌زنید همین‌جا ذخیره می‌شود و هر وقت برگردید، دقیقاً از همین‌جا ادامه می‌دهید.</p>
+      </div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat"><b id="stat-sessions">0/32</b><span>جلسات انجام‌شده</span></div>
+      <div class="stat"><b id="stat-weeks">0/8</b><span>هفته‌های تکمیل</span></div>
+      <div class="stat"><b id="stat-words">0</b><span>لغت ثبت‌شده</span></div>
+      <div class="stat"><b id="stat-listening">0/24</b><span>تمرین شنیداری</span></div>
+      <div class="stat"><b id="stat-writing">0/8</b><span>نوشته تکمیل‌شده</span></div>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <div class="cw-head">
+        <h3 id="cw-title">هفته ۱</h3>
+        <span class="cw-badge" id="cw-month">ماه اول</span>
+      </div>
+      <div class="cw-theme" id="cw-theme">—</div>
+      <div class="sess-list" id="cw-sessions"></div>
+    </div>
+  </div>
+
+  <!-- ===================== FOCUS / POMODORO ===================== -->
+  <div class="view" id="view-focus">
+    <div class="card">
+      <div class="session-type-row" id="session-type-row">
+        <button data-stype="weekday" class="active">جلسه معمولی (۳ روز هفته)</button>
+        <button data-stype="friday">جمع‌بندی جمعه</button>
+      </div>
+      <div class="mode-toggle" id="mode-toggle">
+        <button data-mode="standard" class="mode-btn active">استاندارد — استراحت ۵ دقیقه‌ای</button>
+        <button data-mode="compact" class="mode-btn">فشرده — همون ۱ ساعت</button>
+      </div>
+      <div class="mode-hint" id="mode-hint">جلسه ۷۰ دقیقه‌ای: ۲۵ خواندن + ۵ استراحت + ۲۵ مکالمه + ۵ استراحت + ۱۰ مرور.</div>
+
+      <div class="timer-card">
+        <div class="phase-name" id="phase-name">آماده شروع</div>
+        <div class="timer-digits" id="timer-digits">25:00</div>
+        <div class="phase-dots" id="phase-dots"></div>
+        <div class="timer-controls" id="timer-controls">
+          <button class="btn-start" id="btn-start">شروع</button>
+        </div>
+      </div>
+
+      <div class="guidance-box" id="guidance-box"></div>
+
+      <div class="done-banner" id="done-banner" style="display:none;">
+        <p>🎉 این جلسه رو تموم کردی. می‌خوای همین الان به‌عنوان انجام‌شده ثبتش کنم؟</p>
+        <button class="btn" id="mark-done-btn">ثبت این جلسه در هفته جاری</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== AI CONVERSATION (Speaking) ===================== -->
+  <div class="view" id="view-conversation">
+    <div class="card">
+      <div id="chat-apikey-row"></div>
+      <div class="session-pill-row" id="chat-session-row"></div>
+      <div class="chat-topline">
+        <div>
+          <div class="chat-topic-title" id="chat-topic-title">—</div>
+          <a class="chat-topic-link" id="chat-topic-link" href="#" target="_blank" rel="noopener">مشاهده متن ↗</a>
+        </div>
+        <div style="display:flex; gap:6px; flex-shrink:0;">
+          <button class="chat-toggle-btn active" id="speak-toggle-btn">🔊 خواندن صدا</button>
+          <button class="chat-toggle-btn" id="chat-reset-btn">شروع دوباره</button>
+        </div>
+      </div>
+      <div class="chat-window" id="chat-window" dir="ltr"></div>
+      <div class="chat-input-row">
+        <button class="mic-btn" id="mic-btn" title="صحبت با میکروفون" style="display:none;">🎤</button>
+        <input type="text" id="chat-input" dir="ltr" placeholder="Type your answer in English…">
+        <button class="send-btn" id="chat-send-btn">ارسال</button>
+      </div>
+      <p style="margin:12px 0 0; font-size:11.5px; color:var(--ink-muted);">این گفت‌وگو موقتیه و با رفرش صفحه پاک می‌شه — برای تمرین زنده‌ی صحبت کردنه، نه آرشیو.</p>
+    </div>
+  </div>
+
+  <!-- ===================== LISTENING ===================== -->
+  <div class="view" id="view-listening">
+    <div class="card">
+      <div class="session-pill-row" id="listen-session-row"></div>
+      <div class="chat-topline">
+        <div>
+          <div class="chat-topic-title" id="listen-topic-title">—</div>
+          <a class="chat-topic-link" id="listen-topic-link" href="#" target="_blank" rel="noopener">باز کردن منبع صوتی (متن + صدا) ↗</a>
+        </div>
+      </div>
+      <ol class="listen-steps" id="listen-steps"></ol>
+      <div class="listen-notes">
+        <textarea id="listen-notes-input" placeholder="خلاصه‌ای از چیزی که شنیدید یا نکاتی که متوجه نشدید رو اینجا بنویسید…"></textarea>
+      </div>
+      <div class="listen-done-row">
+        <button class="check" id="listen-done-check"></button>
+        <span style="font-size:13px; color:var(--ink-muted);">این تمرین شنیداری رو انجام دادم</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== WRITING ===================== -->
+  <div class="view" id="view-writing">
+    <div class="card">
+      <div id="write-apikey-row"></div>
+      <div class="cw-head" style="margin-bottom:6px;">
+        <h3 id="write-week-title">هفته ۱</h3>
+      </div>
+      <div class="write-prompt" id="write-prompt"></div>
+      <textarea class="write-textarea" id="write-textarea" placeholder="نوشته‌تون رو اینجا بنویسید…"></textarea>
+      <div class="write-meta-row">
+        <span class="write-count" id="write-count">۰ کلمه</span>
+        <div class="write-actions">
+          <button class="check" id="write-done-check"></button>
+          <span style="font-size:12.5px; color:var(--ink-muted);">تکمیل شد</span>
+          <button class="btn secondary" id="write-local-feedback-btn">بازخورد سریع (بدون API)</button>
+          <button class="btn secondary" id="write-feedback-btn">دریافت بازخورد از هوش مصنوعی</button>
+        </div>
+      </div>
+      <div id="write-feedback-wrap"></div>
+    </div>
+  </div>
+
+  <!-- ===================== WEEKLY PLAN ===================== -->
+  <div class="view" id="view-plan">
+    <div id="weeks-container"></div>
+  </div>
+
+  <!-- ===================== VOCAB ===================== -->
+  <div class="view" id="view-vocab">
+    <div class="card">
+      <div class="vocab-form">
+        <input id="v-word" type="text" placeholder="واژه یا اصطلاح انگلیسی">
+        <input id="v-meaning" type="text" placeholder="معنی فارسی">
+        <input id="v-example" type="text" placeholder="یک جمله مثال (اختیاری)">
+        <button class="btn" id="add-vocab-btn">افزودن</button>
+      </div>
+      <div id="vocab-list"></div>
+    </div>
+  </div>
+
+  <!-- ===================== RESOURCES ===================== -->
+  <div class="view" id="view-resources">
+    <div class="res-card">
+      <h4>British Council — LearnEnglish (B1 Reading & Speaking)</h4>
+      <p>متن‌ها و فایل‌های صوتی متناسب با سطح B1 همراه با تمرین‌های تعاملی — منبع اصلی برای بیشتر هفته‌های ماه اول.</p>
+      <a href="https://learnenglish.britishcouncil.org/skills/reading/b1-reading" target="_blank" rel="noopener">مشاهده منبع ↗</a>
+    </div>
+    <div class="res-card">
+      <h4>BBC 6 Minute English</h4>
+      <p>پادکست‌های ۶ دقیقه‌ای همراه با متن کامل (Transcript) و لیست لغات کلیدی؛ عالی برای تکنیک سایه (Shadowing).</p>
+      <a href="https://www.bbc.co.uk/learningenglish" target="_blank" rel="noopener">مشاهده منبع ↗</a>
+    </div>
+    <div class="res-card">
+      <h4>VOA Learning English (Intermediate)</h4>
+      <p>مقالات خبری ساده‌شده با گویندگی آرام، مناسب برای تقویت هم‌زمان Reading و Speaking.</p>
+      <a href="https://learningenglish.voanews.com/" target="_blank" rel="noopener">مشاهده منبع ↗</a>
+    </div>
+    <div class="res-card">
+      <h4>British Council Magazine Zone</h4>
+      <p>مقالات مجله‌ای درباره فرهنگ و جامعه، مناسب سطح B1 تا B2 — منبع هفته‌های فرهنگی و سبک زندگی.</p>
+      <a href="https://learnenglish.britishcouncil.org/skills/reading/b1-b2-reading/magazine-zone" target="_blank" rel="noopener">مشاهده منبع ↗</a>
+    </div>
+  </div>
+
+  <div class="foot-actions">
+    <button id="reset-btn">بازنشانی کامل پیشرفت</button>
+  </div>
+
+</div>
+
+<script>
+/* ---------------- Static plan content ---------------- */
+const WEEKS = [
+  { num:1, month:1, title:"زندگی روزمره و علایق شخصی",
+    speaking:"توصیف علایق و عادات روزمره با زمان حال ساده و استمراری",
+    writingPrompt:"یک پاراگراف ۱۰۰ تا ۱۵۰ کلمه‌ای بنویسید درباره یک روز معمولی زندگی‌تون و یکی از علایق‌تون. سعی کنید هم از Present Simple (کارهای روتین) و هم از Present Continuous (کاری که این روزها مشغولش هستید) استفاده کنید.",
+    writingWordRange:[100,150],
+    writingChecks:[
+      { label:"Present Continuous (am/is/are + فعل‌ing)", regex:/\b(am|is|are|'m|'re|'s)\s+\w+ing\b/i },
+      { label:"نشونه‌های Present Simple (usually / every day / often / always)", regex:/\b(usually|every day|often|always|sometimes)\b/i },
+    ],
+    readings:[
+      { title:"A flyer for a gym — British Council B1 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/b1/flyer-gym" },
+      { title:"An email request for help — British Council B1 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/b1/email-request-help" },
+      { title:"International Day of Friendship — British Council Magazine Zone", url:"https://learnenglish.britishcouncil.org/free-resources/general/magazine-zone/international-day-friendship" },
+    ]},
+  { num:2, month:1, title:"سفر، خاطرات و عادات دیجیتال",
+    speaking:"روایت خاطرات گذشته (Past Simple/Continuous) و برنامه‌های آینده (going to / will)",
+    writingPrompt:"درباره یک سفر یا خاطره‌ای که یادتونه بنویسید (۱۲۰ تا ۱۵۰ کلمه) — از Past Simple و Past Continuous استفاده کنید. در پایان، یک برنامه آینده مرتبط رو هم با going to یا will اضافه کنید.",
+    writingWordRange:[120,150],
+    writingChecks:[
+      { label:"Past Simple (فعل‌ed یا فعل بی‌قاعده گذشته)", regex:/\b(\w+ed|went|saw|did|had|took|came|got|made|said|thought|knew|found|gave|told|felt|left|began|ran|wrote|bought)\b/i },
+      { label:"Past Continuous (was/were + فعل‌ing)", regex:/\b(was|were)\s+\w+ing\b/i },
+      { label:"آینده (going to / will)", regex:/\b(going to|will|'ll)\b/i },
+    ],
+    readings:[
+      { title:"A travel guide (Bangkok) — British Council B1 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/b1/travel-guide" },
+      { title:"Digital habits across generations — British Council B1 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/b1/digital-habits-across-generations" },
+      { title:"Sharing the road with driverless cars — BBC 6 Minute English", url:"https://www.bbc.co.uk/learningenglish/english/features/6-minute-english_2026/ep-260820" },
+    ]},
+  { num:3, month:1, title:"محیط‌زیست و تکنولوژی",
+    speaking:"بیان نظر شخصی و علت (because / so) درباره تکنولوژی و محیط‌زیست",
+    writingPrompt:"نظرتون رو درباره تأثیر تکنولوژی روی محیط‌زیست در ۱۲۰ تا ۱۵۰ کلمه بنویسید. حداقل از دو ساختار because و so برای بیان علت و نتیجه استفاده کنید.",
+    writingWordRange:[120,150],
+    writingChecks:[
+      { label:"because (بیان علت)", regex:/\bbecause\b/i },
+      { label:"so (بیان نتیجه)", regex:/\bso\b/i },
+    ],
+    readings:[
+      { title:"World Environment Day — British Council Magazine Zone", url:"https://learnenglish.britishcouncil.org/free-resources/general/magazine-zone/world-environment-day" },
+      { title:"جدیدترین مطلب — VOA Science & Technology", url:"https://learningenglish.voanews.com/z/1579" },
+      { title:"Climate change and extreme weather — BBC 6 Minute English", url:"https://www.bbc.co.uk/learningenglish/english/features/6-minute-english_2026/ep-260903" },
+    ]},
+  { num:4, month:1, title:"فرهنگ، جامعه و اخبار ساده",
+    speaking:"موافقت/مخالفت با نظرات خوانده‌شده (Agreeing / Disagreeing)",
+    writingPrompt:"یکی از مطالب این هفته رو انتخاب کنید و در ۱۲۰ تا ۱۵۰ کلمه بنویسید که با نظر نویسنده موافقید یا مخالف، و چرا. از عبارات موافقت/مخالفت (I agree that… / I don't think that…) استفاده کنید.",
+    writingWordRange:[120,150],
+    writingChecks:[
+      { label:"عبارت موافقت/مخالفت (I agree / I don't think / I disagree)", regex:/\bI\s+(agree|disagree|don't think|do not think)\b/i },
+    ],
+    readings:[
+      { title:"How to spot fake news — British Council B1 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/b1/how-spot-fake-news" },
+      { title:"جدیدترین مطلب — VOA Arts & Culture", url:"https://learningenglish.voanews.com/z/986" },
+      { title:"UN International Literacy Day — British Council Magazine Zone", url:"https://learnenglish.britishcouncil.org/free-resources/general/magazine-zone/un-international-literacy-day" },
+    ],
+    selfTest:"خودآزمایی ۱: متن ناآشنای «Encyclopedia entry» را زمان‌دار بخوانید و در ۲ دقیقه شفاهی خلاصه کنید — ضبط را نگه دارید تا هفته ۸.",
+    selfTestReading:{ title:"Encyclopedia entry (Taj Mahal) — British Council B1 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/b1/encyclopedia-entry" } },
+  { num:5, month:2, title:"سبک زندگی و سلامت",
+    speaking:"توصیه دادن (should / could) و مقایسه (comparatives)",
+    writingPrompt:"به یک دوست فرضی درباره بهبود سبک زندگی‌ش توصیه‌هایی بنویسید (۱۲۰ تا ۱۵۰ کلمه) — از should/could برای توصیه و از comparatives (better than, healthier than…) برای مقایسه استفاده کنید.",
+    writingWordRange:[120,150],
+    writingChecks:[
+      { label:"should / could (توصیه)", regex:/\b(should|could)\b/i },
+      { label:"صفت تفضیلی (comparative: …er than / more … than)", regex:/\b\w+er than\b|\bmore \w+ than\b/i },
+    ],
+    readings:[
+      { title:"Mindfulness — British Council Magazine Zone", url:"https://learnenglish.britishcouncil.org/free-resources/general/magazine-zone/mindfulness" },
+      { title:"Yoga — British Council Magazine Zone", url:"https://learnenglish.britishcouncil.org/free-resources/general/magazine-zone/yoga" },
+      { title:"جدیدترین مطلب — VOA Health & Lifestyle", url:"https://learningenglish.voanews.com/z/955" },
+    ]},
+  { num:6, month:2, title:"کار، شغل و آینده حرفه‌ای",
+    speaking:"توضیح علت و معلول، توصیف مسیر شغلی با used to و Present Perfect",
+    writingPrompt:"مسیر شغلی گذشته یا آینده‌ای که مد نظرتونه رو در ۱۲۰ تا ۱۵۰ کلمه توصیف کنید. از used to برای عادت‌های گذشته و از Present Perfect برای تجربه‌ها یا دستاوردهای تا الان استفاده کنید.",
+    writingWordRange:[120,150],
+    writingChecks:[
+      { label:"used to (عادت‌های گذشته)", regex:/\bused to\b/i },
+      { label:"Present Perfect (have/has + فعل سوم)", regex:/\b(have|has|'ve|'s)\s+\w+/i },
+    ],
+    readings:[
+      { title:"A conference programme — British Council B1 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/b1/conference-programme" },
+      { title:"Innovation in business — British Council B1 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/b1/innovation-business" },
+      { title:"جدیدترین مطلب — VOA Economics Report", url:"https://learningenglish.voanews.com/z/983" },
+    ]},
+  { num:7, month:2, title:"داستان‌گویی و روایت",
+    speaking:"تمرین Storytelling با ساختار زمانی منسجم",
+    writingPrompt:"یک داستان کوتاه (واقعی یا تخیلی) در ۱۵۰ تا ۲۰۰ کلمه بنویسید که ساختار زمانی منسجمی داشته باشه (شروع، میانه، پایان) و از کلمات ربط زمانی (first, then, after that, finally) استفاده کنه.",
+    writingWordRange:[150,200],
+    writingChecks:[
+      { label:"کلمات ربط زمانی (first / then / after that / finally / next)", regex:/\b(first|then|after that|finally|next|later)\b/i },
+    ],
+    readings:[
+      { title:"The legend of fairies — British Council B1 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/b1/legend-fairies" },
+      { title:"The Martian: a book review — British Council B1 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/b1/martian-book-review" },
+      { title:"Chocolate — British Council Magazine Zone", url:"https://learnenglish.britishcouncil.org/free-resources/general/magazine-zone/chocolate" },
+    ]},
+  { num:8, month:2, title:"جمع‌بندی نهایی و افزایش سرعت",
+    speaking:"ضبط یک پادکست کوتاه ۳ دقیقه‌ای جمع‌بندی از موضوعات دو ماه",
+    writingPrompt:"یک جمع‌بندی ۱۵۰ تا ۲۰۰ کلمه‌ای بنویسید از مهم‌ترین چیزی که در این دو ماه یاد گرفتید — چه موضوعاتی جالب بودن، چه گرامری هنوز سخته، و قدم بعدی‌تون چیه.",
+    writingWordRange:[150,200],
+    writingChecks:[
+      { label:"کلمات جمع‌بندی/یادگیری (learn / improve / practice)", regex:/\b(learn|learned|learnt|improve|improved|practice|practiced)\b/i },
+    ],
+    readings:[
+      { title:"Social media influencers — British Council B1 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/b1/social-media-influencers" },
+      { title:"Robot teachers — British Council B1 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/b1/robot-teachers" },
+      { title:"International Day of Happiness — British Council Magazine Zone", url:"https://learnenglish.britishcouncil.org/free-resources/general/magazine-zone/international-day-happiness" },
+    ],
+    selfTest:"خودآزمایی ۲: متن ناآشنای «Planning an event» را با همان قالب هفته ۴ بخوانید، سپس دو ضبط (هفته ۴ و ۸) را کنار هم گوش دهید و تفاوت روانی و تلفظ را یادداشت کنید.",
+    selfTestReading:{ title:"Planning an event — British Council B1 Reading", url:"https://learnenglish.britishcouncil.org/free-resources/reading/b1/planning-event" } },
+];
+const TOTAL_SESSIONS = WEEKS.length * 4; // 3 weekday + 1 friday per week
+
+/* ---------------- Storage (localStorage) ---------------- */
+function storageGet(key){
+  try{ return localStorage.getItem(key); }
+  catch(e){ return null; }
+}
+function storageSet(key, value){
+  try{ localStorage.setItem(key, value); }
+  catch(e){ console.error('storage write failed', key, e); }
+}
+
+/* ---------------- State ---------------- */
+let progress = null; // { weeks: [ {sessions:[{done,words,note}x3], friday:{done,note}} x8 ] }
+let vocab = [];
+let openWeek = null;
+
+function defaultProgress(){
+  return { weeks: WEEKS.map(() => ({
+    sessions: [0,1,2].map(() => ({ done:false, words:'', note:'' })),
+    friday: { done:false, note:'' },
+    listening: [0,1,2].map(() => ({ done:false, notes:'' })),
+    writing: { done:false, text:'', feedback:'', feedbackSource:'' }
+  })) };
+}
+
+function migrateProgress(p){
+  p.weeks.forEach(w => {
+    if(!w.listening) w.listening = [0,1,2].map(() => ({ done:false, notes:'' }));
+    if(!w.writing) w.writing = { done:false, text:'', feedback:'', feedbackSource:'' };
+    if(w.writing.feedbackSource === undefined) w.writing.feedbackSource = '';
+  });
+  return p;
+}
+
+async function loadState(){
+  try{
+    const p = storageGet('study-progress');
+    progress = p ? migrateProgress(JSON.parse(p)) : defaultProgress();
+  }catch(e){ progress = defaultProgress(); }
+
+  try{
+    const v = storageGet('vocab-bank');
+    vocab = v ? JSON.parse(v) : [];
+  }catch(e){ vocab = []; }
+
+  await loadFocusPrefs();
+  await loadApiKey();
+  render();
+  rebuildFocusPhases();
+  initChatDefaults();
+  initListeningDefaults();
+  renderWriting();
+}
+
+async function saveProgress(){
+  storageSet('study-progress', JSON.stringify(progress));
+}
+async function saveVocab(){
+  storageSet('vocab-bank', JSON.stringify(vocab));
+}
+
+/* ---------------- Derived stats ---------------- */
+function countDone(){
+  let n = 0;
+  progress.weeks.forEach(w => {
+    w.sessions.forEach(s => { if(s.done) n++; });
+    if(w.friday.done) n++;
+  });
+  return n;
+}
+function countListeningDone(){
+  let n = 0;
+  progress.weeks.forEach(w => w.listening.forEach(s => { if(s.done) n++; }));
+  return n;
+}
+function countWritingDone(){
+  return progress.weeks.filter(w => w.writing.done).length;
+}
+function weeksFullyDone(){
+  return progress.weeks.filter(w => w.sessions.every(s=>s.done) && w.friday.done).length;
+}
+function currentWeekIndex(){
+  for(let i=0;i<progress.weeks.length;i++){
+    const w = progress.weeks[i];
+    if(!(w.sessions.every(s=>s.done) && w.friday.done)) return i;
+  }
+  return progress.weeks.length - 1;
+}
+
+/* ---------------- Rendering ---------------- */
+function render(){
+  renderDashboard();
+  renderWeeks();
+  renderVocab();
+}
+
+function renderDashboard(){
+  const done = countDone();
+  const pct = Math.round((done / TOTAL_SESSIONS) * 100);
+  document.getElementById('pct-text').textContent = pct + '%';
+  const circumference = 2 * Math.PI * 52;
+  const offset = circumference - (pct/100)*circumference;
+  document.getElementById('ring-fg').style.strokeDasharray = circumference.toFixed(0);
+  document.getElementById('ring-fg').style.strokeDashoffset = offset.toFixed(0);
+
+  document.getElementById('stat-sessions').textContent = `${done}/${TOTAL_SESSIONS}`;
+  document.getElementById('stat-weeks').textContent = `${weeksFullyDone()}/8`;
+  document.getElementById('stat-words').textContent = vocab.length;
+  document.getElementById('stat-listening').textContent = `${countListeningDone()}/${WEEKS.length*3}`;
+  document.getElementById('stat-writing').textContent = `${countWritingDone()}/${WEEKS.length}`;
+
+  const headlines = [
+    'بزن بریم شروع کنیم',
+    'شروع خوبیه، ادامه بده',
+    'داری روی روال می‌افتی',
+    'نصف راه رو رفتی',
+    'روانی داره شکل می‌گیره',
+    'به خط پایان نزدیکی',
+    'همین چند قدم مونده',
+    'دوره رو تموم کردی 🎉'
+  ];
+  const hIdx = Math.min(Math.floor(pct/13), headlines.length-1);
+  document.getElementById('dash-headline').textContent = pct===0 ? headlines[0] : headlines[Math.max(hIdx,1)];
+
+  const cwIdx = currentWeekIndex();
+  const wk = WEEKS[cwIdx];
+  const wp = progress.weeks[cwIdx];
+  document.getElementById('cw-title').textContent = `هفته ${wk.num} در جریان`;
+  document.getElementById('cw-month').textContent = wk.month === 1 ? 'ماه اول' : 'ماه دوم';
+  document.getElementById('cw-theme').textContent = wk.title;
+
+  const sessWrap = document.getElementById('cw-sessions');
+  sessWrap.innerHTML = '';
+  wp.sessions.forEach((s, si) => sessWrap.appendChild(buildSessionRow(cwIdx, si, s, `جلسه ${si+1}`, wk.readings[si], wk.speaking, wk.num)));
+  sessWrap.appendChild(buildFridayRow(cwIdx, wp.friday, wk));
+}
+
+function buildSessionRow(weekIdx, sessIdx, sessObj, label, readingItem, speakingTopic, weekNum){
+  const row = document.createElement('div');
+  row.className = 'sess';
+  const readingHtml = readingItem
+    ? `<a href="${readingItem.url}" target="_blank" rel="noopener">📖 ${escapeHtml(readingItem.title)}</a>`
+    : '';
+  const speakingSteps = speakingGuidance(weekNum, 25);
+  const speakingHtml = `
+    <div class="speak-line">🗣️ Speaking: ${escapeHtml(speakingTopic)}</div>
+    <details class="speak-details">
+      <summary>جزئیات ۲۵ دقیقه Speaking (خلاصه‌گویی + سایه + پرسش‌وپاسخ)</summary>
+      <ul>${speakingSteps.map(s=>`<li>${escapeHtml(s)}</li>`).join('')}</ul>
+    </details>`;
+  row.innerHTML = `
+    <button class="check ${sessObj.done?'on':''}">${sessObj.done?'✓':''}</button>
+    <div class="sess-body">
+      <div class="sess-title">${label} <span class="sess-sub">(Reading ۲۵د + Speaking ۲۵د + مرور ۱۰د)</span></div>
+      <div class="sess-sub">${readingHtml}</div>
+      ${speakingHtml}
+      <div class="sess-fields">
+        <input type="number" min="0" placeholder="تعداد لغت" value="${sessObj.words}">
+        <textarea placeholder="یادداشت کوتاه (اختیاری)">${sessObj.note}</textarea>
+      </div>
+    </div>`;
+  row.querySelector('.check').addEventListener('click', () => {
+    sessObj.done = !sessObj.done;
+    saveProgress();
+    render();
+  });
+  const numInput = row.querySelector('input[type=number]');
+  numInput.addEventListener('change', () => { sessObj.words = numInput.value; saveProgress(); });
+  const noteInput = row.querySelector('textarea');
+  noteInput.addEventListener('change', () => { sessObj.note = noteInput.value; saveProgress(); });
+  return row;
+}
+
+function buildFridayRow(weekIdx, fridayObj, wk){
+  const row = document.createElement('div');
+  row.className = 'sess friday';
+  const spacedNote = wk.num >= 3
+    ? `مرور واژگان این هفته + هفته‌های ${Math.max(1,wk.num-2)} و ${Math.max(1,wk.num-1)} (مرور فاصله‌دار)`
+    : `مرور واژگان این هفته`;
+  row.innerHTML = `
+    <button class="check ${fridayObj.done?'on':''}">${fridayObj.done?'✓':''}</button>
+    <div class="sess-body">
+      <div class="sess-title">جمع‌بندی جمعه <span class="sess-sub">(۴۵–۶۰ دقیقه)</span></div>
+      <div class="sess-sub">${spacedNote}</div>
+      ${wk.selfTest ? `<div class="self-test-note">${wk.selfTest}${wk.selfTestReading ? `<br><a href="${wk.selfTestReading.url}" target="_blank" rel="noopener">📖 ${escapeHtml(wk.selfTestReading.title)}</a>` : ''}</div>` : ''}
+      <div class="sess-fields">
+        <textarea placeholder="یادداشت جمع‌بندی (اختیاری)">${fridayObj.note}</textarea>
+      </div>
+    </div>`;
+  row.querySelector('.check').addEventListener('click', () => {
+    fridayObj.done = !fridayObj.done;
+    saveProgress();
+    render();
+  });
+  row.querySelector('textarea').addEventListener('change', (e) => { fridayObj.note = e.target.value; saveProgress(); });
+  return row;
+}
+
+function renderWeeks(){
+  const wrap = document.getElementById('weeks-container');
+  wrap.innerHTML = '';
+  WEEKS.forEach((wk, idx) => {
+    const wp = progress.weeks[idx];
+    const doneCount = wp.sessions.filter(s=>s.done).length + (wp.friday.done?1:0);
+    const fullyDone = doneCount === 4;
+    const item = document.createElement('div');
+    item.className = 'week-item' + (openWeek===idx ? ' open' : '');
+
+    const summary = document.createElement('div');
+    summary.className = 'week-summary';
+    summary.innerHTML = `
+      <div class="week-num ${fullyDone?'done':''}">${fullyDone?'✓':wk.num}</div>
+      <div class="week-summary-text">
+        <div class="wt">هفته ${wk.num} — ${wk.title}</div>
+        <div class="ws">${wk.month===1?'ماه اول':'ماه دوم'}</div>
+      </div>
+      <div class="week-progress-mini">${doneCount}/4</div>
+      <div class="chevron">⌄</div>`;
+    summary.addEventListener('click', () => { openWeek = (openWeek===idx ? null : idx); renderWeeks(); });
+
+    const detail = document.createElement('div');
+    detail.className = 'week-detail';
+    const info = document.createElement('div');
+    info.className = 'week-info';
+    info.innerHTML = `<strong>Speaking:</strong> ${wk.speaking}`;
+    detail.appendChild(info);
+
+    const sessList = document.createElement('div');
+    sessList.className = 'sess-list';
+    wp.sessions.forEach((s, si) => sessList.appendChild(buildSessionRow(idx, si, s, `جلسه ${si+1}`, wk.readings[si], wk.speaking, wk.num)));
+    sessList.appendChild(buildFridayRow(idx, wp.friday, wk));
+    detail.appendChild(sessList);
+
+    item.appendChild(summary);
+    item.appendChild(detail);
+    wrap.appendChild(item);
+  });
+}
+
+function renderVocab(){
+  const list = document.getElementById('vocab-list');
+  list.innerHTML = '';
+  if(vocab.length === 0){
+    list.innerHTML = '<div class="empty">هنوز لغتی ثبت نکردید. لغات جدیدی که از متن‌ها استخراج می‌کنید را اینجا اضافه کنید.</div>';
+    return;
+  }
+  [...vocab].reverse().forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'vocab-card';
+    card.innerHTML = `
+      <div style="flex:1; min-width:0;">
+        <span class="vocab-word">${escapeHtml(item.word)}</span>
+        <div class="vocab-meaning">${escapeHtml(item.meaning)}</div>
+        ${item.example ? `<div class="vocab-example">${escapeHtml(item.example)}</div>` : ''}
+      </div>
+      <div class="vocab-meta">
+        <div class="vocab-actions">
+          <button class="icon-btn ${item.reviewed?'reviewed':''}" title="مرورشده">✓</button>
+          <button class="icon-btn" title="حذف">✕</button>
+        </div>
+        <div class="vocab-reviewed">${item.reviewed ? 'مرور شده' : 'مرور نشده'}</div>
+      </div>`;
+    card.querySelectorAll('.icon-btn')[0].addEventListener('click', () => {
+      item.reviewed = !item.reviewed; saveVocab(); renderVocab();
+    });
+    card.querySelectorAll('.icon-btn')[1].addEventListener('click', () => {
+      vocab = vocab.filter(v => v.id !== item.id); saveVocab(); renderVocab(); renderDashboard();
+    });
+    list.appendChild(card);
+  });
+}
+
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str || '';
+  return d.innerHTML;
+}
+
+/* ================= FOCUS / POMODORO TIMER ================= */
+/* Weekday session = one Pomodoro for Reading + one Pomodoro for Speaking,
+   each followed by a real break, plus a short closing review block.
+   Friday session = three Pomodoro-style blocks with short breaks between them. */
+
+let focusPrefs = { mode:'standard' }; // 'standard' (5-min breaks) or 'compact' (fits exactly 60 min)
+let focusSessionType = 'weekday';
+let focusPhases = [];
+let focusIdx = 0;
+let focusEndAt = null;      // timestamp when current phase ends
+let focusRemaining = 0;     // seconds left, used while paused
+let focusRunning = false;
+let focusTickHandle = null;
+let focusFinished = false;
+
+function shadowingGuidance(weekNum){
+  let clip = 'یک قطعه ۳۰ تا ۴۵ ثانیه‌ای از یک اپیزود BBC 6 Minute English';
+  if(weekNum >= 4 && weekNum <= 6) clip = 'یک قطعه حدود ۱ دقیقه‌ای از اپیزود این هفته';
+  if(weekNum >= 7) clip = 'کل اپیزود (تا ۶ دقیقه) رو پیوسته';
+  return clip;
+}
+
+function getPhases(sessionType, mode, weekNum){
+  if(sessionType === 'friday'){
+    const shortBreak = mode==='compact' ? 60 : 180;
+    return [
+      { name:'مرور واژگان هفته', type:'vocab', seconds: 15*60,
+        guidance:[
+          'واژگان تب «دایره واژگان» رو یکی‌یکی با صدای بلند در یک جمله مثال به کار ببر.',
+          weekNum>=3 ? `طبق مرور فاصله‌دار، واژگان هفته‌های ${Math.max(1,weekNum-2)} و ${Math.max(1,weekNum-1)} رو هم مرور کن.` : 'این هفته فقط واژگان همین هفته رو مرور کن.'
+        ]},
+      { name:'استراحت کوتاه', type:'break', seconds: shortBreak, guidance:['چند نفس عمیق بکش، از صفحه فاصله بگیر.'] },
+      { name:'بازخوانی و بازگویی', type:'review-speak', seconds: 20*60,
+        guidance:[
+          'به یکی از ضبط‌های صوتی این هفته گوش بده.',
+          'اشتباهات تلفظی یا گرامری رو یادداشت کن.',
+          'همون موضوع رو یک‌بار دیگه، بهتر از قبل، شفاهی توضیح بده و دوباره ضبط کن.'
+        ]},
+      { name:'استراحت کوتاه', type:'break', seconds: shortBreak, guidance:['کمی آب بخور یا حرکت کن.'] },
+      { name:'ارزیابی پیشرفت', type:'eval', seconds: 15*60,
+        guidance:[
+          'یک کوئیز کوتاه رایگان Reading یا Listening از منابع معرفی‌شده انجام بده.',
+          'اگر این هفته، هفته ۴ یا ۸ هست، خودآزمایی مخصوص همین هفته رو هم همین‌جا انجام بده (توضیحش در تب «برنامه هفتگی» کنار جمعه همین هفته هست).'
+        ]},
+    ];
+  }
+
+  // weekday session
+  if(mode === 'compact'){
+    return [
+      { name:'خواندن (Reading)', type:'reading', seconds: 22*60,
+        guidance:['متن پیشنهادی همین جلسه رو از تب «برنامه هفتگی» باز کن.','۵ تا ۷ واژه یا اصطلاح جدید رو در تب «دایره واژگان» ثبت کن.','ساختارهای گرامری پرکاربرد رو علامت بزن.'] },
+      { name:'استراحت کوتاه', type:'break', seconds: 3*60, guidance:['۳ دقیقه کامل از صفحه فاصله بگیر.'] },
+      { name:'مکالمه (Speaking + Shadowing)', type:'speaking', seconds: 22*60, guidance: speakingGuidance(weekNum, 22) },
+      { name:'استراحت کوتاه', type:'break', seconds: 3*60, guidance:['کمی آب بخور یا حرکت کن.'] },
+      { name:'مرور و تثبیت', type:'review', seconds: 10*60, guidance:['یک پادکست مرتبط رو سریع گوش بده یا ۳ جمله کوتاه درباره موضوع امروز بنویس.'] },
+    ];
+  }
+  return [
+    { name:'خواندن (Reading)', type:'reading', seconds: 25*60,
+      guidance:['متن پیشنهادی همین جلسه رو از تب «برنامه هفتگی» باز کن.','۵ تا ۷ واژه یا اصطلاح جدید رو در تب «دایره واژگان» ثبت کن.','ساختارهای گرامری پرکاربرد رو علامت بزن.'] },
+    { name:'استراحت — دور از صفحه', type:'break', seconds: 5*60, guidance:['بلند شو، کمی حرکت کن یا آب بخور — گوشی و شبکه‌های اجتماعی ممنوع، این استراحت واقعیه.'] },
+    { name:'مکالمه (Speaking + Shadowing)', type:'speaking', seconds: 25*60, guidance: speakingGuidance(weekNum, 25) },
+    { name:'استراحت — دور از صفحه', type:'break', seconds: 5*60, guidance:['دوباره از صفحه فاصله بگیر — همین استراحت کوتاه تمرکز جلسه بعدی رو بهتر می‌کنه.'] },
+    { name:'مرور و تثبیت', type:'review', seconds: 10*60, guidance:['یک پادکست مرتبط رو سریع گوش بده یا ۳ جمله کوتاه درباره موضوع امروز بنویس.'] },
+  ];
+}
+
+function speakingGuidance(weekNum, totalMin){
+  const clip = shadowingGuidance(weekNum);
+  if(totalMin >= 25){
+    return [
+      '۱) خلاصه‌گویی — ۸ دقیقه: متنی که خواندی رو ۲ دقیقه مرور کن، بعد در ۲ دقیقه با صدای بلند خلاصه کن و ضبطش کن.',
+      `۲) سایه (Shadowing) — ۱۲ دقیقه، روی ${clip}:`,
+      '    الف) گوش دادن ساده بدون متن (۲ دقیقه) — فقط بفهم موضوع کلی.',
+      '    ب) هم‌زمان خواندن transcript و شنیدن (۲ دقیقه) — تلفظ و استرس کلمات رو علامت بزن.',
+      '    ج) سایه با متن جلوی چشم (۴ دقیقه) — هم‌زمان با گوینده با صدای بلند تکرار کن.',
+      '    د) سایه بدون متن + ضبط صدا (۴ دقیقه) — فقط با ریتم و آهنگ صدا حرکت کن، بعداً با اصلی مقایسه کن.',
+      '۳) پرسش و پاسخ موضوعی — ۵ دقیقه: به تب «مکالمه» برو و درباره همین موضوع با هوش مصنوعی گفتگوی زنده کن (تایمر همچنان در پس‌زمینه کار می‌کنه).',
+    ];
+  }
+  return [
+    '۱) خلاصه‌گویی — ۷ دقیقه: خلاصه ۲ دقیقه‌ای متن رو ضبط کن.',
+    `۲) سایه (Shadowing) — ۱۰ دقیقه روی ${clip}: گوش ساده → هم‌زمان با متن → سایه با متن → سایه بدون متن و ضبط.`,
+    '۳) پرسش و پاسخ موضوعی — ۵ دقیقه: تب «مکالمه» رو باز کن و با هوش مصنوعی درباره موضوع گفتگو کن.',
+  ];
+}
+
+async function loadFocusPrefs(){
+  try{
+    const p = storageGet('focus-prefs');
+    if(p) focusPrefs = JSON.parse(p);
+  }catch(e){ /* use defaults */ }
+}
+async function saveFocusPrefs(){
+  storageSet('focus-prefs', JSON.stringify(focusPrefs));
+}
+
+function beep(freq){
+  try{
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.frequency.value = freq || 880;
+    osc.connect(gain); gain.connect(ctx.destination);
+    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+    osc.start(); osc.stop(ctx.currentTime + 0.6);
+  }catch(e){ /* audio not available, ignore */ }
+}
+
+function rebuildFocusPhases(){
+  const cwIdx = currentWeekIndex();
+  const weekNum = WEEKS[cwIdx].num;
+  focusPhases = getPhases(focusSessionType, focusPrefs.mode, weekNum);
+  focusIdx = 0;
+  focusRunning = false;
+  focusFinished = false;
+  focusRemaining = focusPhases[0].seconds;
+  focusEndAt = null;
+  clearInterval(focusTickHandle);
+  renderFocus();
+}
+
+function renderFocus(){
+  document.querySelectorAll('#session-type-row button').forEach(b => b.classList.toggle('active', b.dataset.stype===focusSessionType));
+  document.querySelectorAll('#mode-toggle .mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode===focusPrefs.mode));
+  document.getElementById('mode-hint').textContent = focusSessionType==='friday'
+    ? 'جلسه جمعه با دو استراحت کوتاه بین بخش‌ها، در همون بازه ۴۵ تا ۶۰ دقیقه.'
+    : (focusPrefs.mode==='standard'
+        ? 'جلسه ۷۰ دقیقه‌ای: ۲۵ خواندن + ۵ استراحت + ۲۵ مکالمه + ۵ استراحت + ۱۰ مرور.'
+        : 'جلسه دقیقاً ۶۰ دقیقه‌ای با استراحت‌های ۳ دقیقه‌ای فشرده.');
+
+  const phase = focusPhases[focusIdx];
+  document.getElementById('phase-name').textContent = focusFinished ? 'جلسه تمام شد 🎉' : phase.name;
+  const secs = focusRunning ? Math.max(0, Math.round((focusEndAt - Date.now())/1000)) : focusRemaining;
+  document.getElementById('timer-digits').textContent = formatTime(secs);
+
+  const dotsWrap = document.getElementById('phase-dots');
+  dotsWrap.innerHTML = '';
+  focusPhases.forEach((p, i) => {
+    const d = document.createElement('div');
+    d.className = 'phase-dot' + (i < focusIdx || focusFinished ? ' done' : (i===focusIdx ? ' current' : ''));
+    dotsWrap.appendChild(d);
+  });
+
+  const controls = document.getElementById('timer-controls');
+  controls.innerHTML = '';
+  if(!focusFinished){
+    if(!focusRunning){
+      const startBtn = document.createElement('button');
+      startBtn.className = 'btn-start';
+      startBtn.textContent = focusIdx===0 && focusRemaining===phase.seconds ? 'شروع' : 'ادامه';
+      startBtn.addEventListener('click', startFocusPhase);
+      controls.appendChild(startBtn);
+    } else {
+      const pauseBtn = document.createElement('button');
+      pauseBtn.className = 'btn-pause';
+      pauseBtn.textContent = 'توقف';
+      pauseBtn.addEventListener('click', pauseFocusPhase);
+      controls.appendChild(pauseBtn);
+    }
+    const skipBtn = document.createElement('button');
+    skipBtn.className = 'btn-skip';
+    skipBtn.textContent = 'رد کردن این بخش';
+    skipBtn.addEventListener('click', () => advanceFocusPhase(false));
+    controls.appendChild(skipBtn);
+  }
+
+  const gbox = document.getElementById('guidance-box');
+  if(focusFinished){
+    gbox.innerHTML = '';
+  } else {
+    gbox.innerHTML = `<h4>${phase.type==='speaking' ? 'راهنمای مکالمه و سایه' : (phase.type==='break' ? 'راهنمای استراحت' : 'راهنما')}</h4><ul>${phase.guidance.map(g=>`<li>${escapeHtml(g)}</li>`).join('')}</ul>`;
+  }
+
+  document.getElementById('done-banner').style.display = focusFinished ? 'block' : 'none';
+}
+
+function formatTime(totalSeconds){
+  const m = Math.floor(totalSeconds/60).toString().padStart(2,'0');
+  const s = Math.floor(totalSeconds%60).toString().padStart(2,'0');
+  return `${m}:${s}`;
+}
+
+function startFocusPhase(){
+  focusRunning = true;
+  focusEndAt = Date.now() + focusRemaining*1000;
+  clearInterval(focusTickHandle);
+  focusTickHandle = setInterval(focusTick, 250);
+  renderFocus();
+}
+function pauseFocusPhase(){
+  focusRunning = false;
+  focusRemaining = Math.max(0, Math.round((focusEndAt - Date.now())/1000));
+  clearInterval(focusTickHandle);
+  renderFocus();
+}
+function focusTick(){
+  const secsLeft = Math.max(0, Math.round((focusEndAt - Date.now())/1000));
+  document.getElementById('timer-digits').textContent = formatTime(secsLeft);
+  if(secsLeft <= 0){
+    advanceFocusPhase(true);
+  }
+}
+function advanceFocusPhase(playSound){
+  clearInterval(focusTickHandle);
+  if(playSound) beep(focusPhases[focusIdx].type==='break' ? 660 : 990);
+  if(focusIdx >= focusPhases.length - 1){
+    focusFinished = true;
+    focusRunning = false;
+    renderFocus();
+    return;
+  }
+  focusIdx += 1;
+  focusRunning = false;
+  focusRemaining = focusPhases[focusIdx].seconds;
+  focusEndAt = null;
+  renderFocus();
+}
+
+function markFocusSessionDone(){
+  const cwIdx = currentWeekIndex();
+  const wp = progress.weeks[cwIdx];
+  if(focusSessionType === 'friday'){
+    wp.friday.done = true;
+  } else {
+    const nextIdx = wp.sessions.findIndex(s => !s.done);
+    if(nextIdx !== -1) wp.sessions[nextIdx].done = true;
+  }
+  saveProgress();
+  render();
+  rebuildFocusPhases();
+}
+
+document.getElementById('session-type-row').addEventListener('click', (e) => {
+  const btn = e.target.closest('button[data-stype]');
+  if(!btn) return;
+  focusSessionType = btn.dataset.stype;
+  rebuildFocusPhases();
+});
+document.getElementById('mode-toggle').addEventListener('click', (e) => {
+  const btn = e.target.closest('button[data-mode]');
+  if(!btn) return;
+  focusPrefs.mode = btn.dataset.mode;
+  saveFocusPrefs();
+  rebuildFocusPhases();
+});
+document.getElementById('mark-done-btn').addEventListener('click', markFocusSessionDone);
+
+/* ================= CLAUDE API KEY + SHARED HELPER ================= */
+let claudeApiKey = '';
+
+async function loadApiKey(){
+  try{
+    const k = storageGet('claude-api-key');
+    claudeApiKey = k ? JSON.parse(k) : '';
+  }catch(e){ claudeApiKey = ''; }
+}
+async function saveApiKey(key){
+  claudeApiKey = key;
+  storageSet('claude-api-key', JSON.stringify(key));
+}
+
+function buildApiKeyRow(onChange){
+  const wrap = document.createElement('div');
+  wrap.className = 'api-key-row';
+  if(claudeApiKey){
+    wrap.innerHTML = `<span class="api-key-status">🔑 کلید API ثبت شده</span><button class="link-btn" id="apikey-change-btn">تغییرش بده</button>`;
+    wrap.querySelector('#apikey-change-btn').addEventListener('click', async () => {
+      await saveApiKey('');
+      onChange();
+    });
+  } else {
+    wrap.innerHTML = `<input type="password" id="apikey-input" placeholder="کلید API آنتروپیک‌تون رو وارد کنید (sk-ant-…)"><button class="btn secondary" id="apikey-save-btn">ذخیره</button>`;
+    wrap.querySelector('#apikey-save-btn').addEventListener('click', async () => {
+      const val = wrap.querySelector('#apikey-input').value.trim();
+      if(!val) return;
+      await saveApiKey(val);
+      onChange();
+    });
+  }
+  return wrap;
+}
+
+function apiKeyHintNode(){
+  const p = document.createElement('p');
+  p.className = 'api-key-hint';
+  p.textContent = 'این کلید فقط در همین مرورگر ذخیره می‌شه و مستقیماً از مرورگر شما به آنتروپیک ارسال می‌شه — جای دیگه‌ای فرستاده نمی‌شه.';
+  return p;
+}
+
+async function callClaude(systemPrompt, messages){
+  if(!claudeApiKey) throw new Error('no-api-key');
+  const response = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": claudeApiKey,
+      "anthropic-version": "2023-06-01",
+      "anthropic-dangerous-direct-browser-access": "true"
+    },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-6",
+      max_tokens: 1000,
+      system: systemPrompt,
+      messages
+    })
+  });
+  const data = await response.json();
+  if(!response.ok){
+    throw new Error((data && data.error && data.error.message) || 'request-failed');
+  }
+  return ((data.content||[]).map(b => b.text || '').join('').trim());
+}
+
+/* ================= AI CONVERSATION (Speaking partner) ================= */
+let chatWeekIdx = 0;
+let chatSessIdx = 0;
+let chatHistory = [];   // { role: 'user' | 'assistant', text: string }
+let chatLoading = false;
+let speakEnabled = true;
+let recognizing = false;
+let recognition = null;
+
+function initChatDefaults(){
+  chatWeekIdx = currentWeekIndex();
+  const wp = progress.weeks[chatWeekIdx];
+  const idx = wp.sessions.findIndex(s => !s.done);
+  chatSessIdx = idx === -1 ? 0 : idx;
+  startNewChat();
+}
+
+function currentChatTopic(){
+  return WEEKS[chatWeekIdx].readings[chatSessIdx];
+}
+
+function startNewChat(){
+  try{ speechSynthesis.cancel(); }catch(e){}
+  const topic = currentChatTopic();
+  const shortTitle = topic.title.split(' — ')[0];
+  chatHistory = [{ role:'assistant', text: `Hi there! 👋 Today's topic is "${shortTitle}". Could you tell me, in your own words, what the article was about? Take your time!` }];
+  renderChat();
+}
+
+function renderChat(){
+  const wk = WEEKS[chatWeekIdx];
+
+  const keyWrap = document.getElementById('chat-apikey-row');
+  keyWrap.innerHTML = '';
+  keyWrap.appendChild(buildApiKeyRow(renderChat));
+  if(!claudeApiKey) keyWrap.appendChild(apiKeyHintNode());
+
+  const pillRow = document.getElementById('chat-session-row');
+  pillRow.innerHTML = '';
+  wk.readings.forEach((r, i) => {
+    const b = document.createElement('button');
+    b.className = 'session-pill' + (i===chatSessIdx ? ' active' : '');
+    b.textContent = `جلسه ${i+1}`;
+    b.addEventListener('click', () => {
+      if(chatSessIdx===i || chatLoading) return;
+      chatSessIdx = i;
+      startNewChat();
+    });
+    pillRow.appendChild(b);
+  });
+
+  const topic = currentChatTopic();
+  document.getElementById('chat-topic-title').textContent = `هفته ${wk.num} — ${topic.title}`;
+  document.getElementById('chat-topic-link').href = topic.url;
+
+  const win = document.getElementById('chat-window');
+  win.innerHTML = '';
+  chatHistory.forEach(m => {
+    const row = document.createElement('div');
+    row.className = 'msg ' + (m.role==='user' ? 'user' : 'ai');
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    bubble.textContent = m.text;
+    row.appendChild(bubble);
+    win.appendChild(row);
+  });
+  if(chatLoading){
+    const row = document.createElement('div');
+    row.className = 'msg ai typing';
+    row.innerHTML = `<div class="bubble">…</div>`;
+    win.appendChild(row);
+  }
+  win.scrollTop = win.scrollHeight;
+
+  document.getElementById('speak-toggle-btn').classList.toggle('active', speakEnabled);
+  document.getElementById('chat-send-btn').disabled = chatLoading || !claudeApiKey;
+  document.getElementById('chat-input').disabled = chatLoading || !claudeApiKey;
+}
+
+async function sendChatMessage(){
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if(!text || chatLoading || !claudeApiKey) return;
+
+  chatHistory.push({ role:'user', text });
+  input.value = '';
+  chatLoading = true;
+  renderChat();
+
+  const topic = currentChatTopic();
+  const wk = WEEKS[chatWeekIdx];
+  const systemPrompt = `You are a warm, patient English conversation partner helping a Persian-speaking B1-level English learner practice SPEAKING, as part of a structured reading-and-speaking study plan. Today's topic (an article the learner just read) is: "${topic.title}" — part of this week's theme "${wk.title}".
+Rules for every reply:
+- Keep your reply SHORT: 2 to 4 simple sentences, B1-level vocabulary and grammar.
+- Always end with exactly one engaging follow-up question about the topic to keep the conversation going.
+- If the learner's last message has a clear grammar or word-choice mistake, gently include ONE short friendly correction (e.g. "Nice! Just a small tip: we usually say ... instead of ..."), then continue naturally. Skip correction sometimes so the conversation still feels natural.
+- Always reply in English only, even if the learner writes in Persian.
+- Be warm and encouraging, like a supportive conversation partner, not a strict teacher.`;
+
+  try{
+    const apiMessages = chatHistory.map(m => ({ role: m.role, content: m.text }));
+    const reply = (await callClaude(systemPrompt, apiMessages)) || "Sorry, could you say that again?";
+    chatHistory.push({ role:'assistant', text: reply });
+    chatLoading = false;
+    renderChat();
+    speak(reply);
+  }catch(e){
+    chatHistory.push({ role:'assistant', text:"Sorry, I couldn't connect just now — please check your API key and try again." });
+    chatLoading = false;
+    renderChat();
+  }
+}
+
+function speak(text){
+  if(!speakEnabled) return;
+  try{
+    if(!('speechSynthesis' in window)) return;
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US';
+    u.rate = 0.95;
+    speechSynthesis.speak(u);
+  }catch(e){ /* speech synthesis unavailable, ignore */ }
+}
+
+function setupSpeechRecognition(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const micBtn = document.getElementById('mic-btn');
+  if(!SR){ micBtn.style.display = 'none'; return; }
+  micBtn.style.display = 'flex';
+  recognition = new SR();
+  recognition.lang = 'en-US';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+  recognition.onresult = (e) => {
+    const transcript = e.results[0][0].transcript;
+    const input = document.getElementById('chat-input');
+    input.value = (input.value ? input.value + ' ' : '') + transcript;
+  };
+  recognition.onend = () => { recognizing = false; micBtn.classList.remove('listening'); };
+  recognition.onerror = () => { recognizing = false; micBtn.classList.remove('listening'); };
+  micBtn.addEventListener('click', () => {
+    if(recognizing){ recognition.stop(); return; }
+    try{ recognition.start(); recognizing = true; micBtn.classList.add('listening'); }
+    catch(e){ /* recognition already running etc. */ }
+  });
+}
+
+document.getElementById('chat-send-btn').addEventListener('click', sendChatMessage);
+document.getElementById('chat-input').addEventListener('keydown', (e) => {
+  if(e.key === 'Enter'){ e.preventDefault(); sendChatMessage(); }
+});
+document.getElementById('speak-toggle-btn').addEventListener('click', () => {
+  speakEnabled = !speakEnabled;
+  if(!speakEnabled){ try{ speechSynthesis.cancel(); }catch(e){} }
+  renderChat();
+});
+document.getElementById('chat-reset-btn').addEventListener('click', startNewChat);
+
+setupSpeechRecognition();
+
+/* ================= LISTENING ================= */
+let listenWeekIdx = 0;
+let listenSessIdx = 0;
+
+const LISTENING_STEPS = [
+  'بار اول: فقط گوش بدید (بدون نگاه به متن) و سعی کنید موضوع کلی رو بفهمید.',
+  'بار دوم: هم‌زمان با شنیدن، Transcript رو دنبال کنید و کلمات یا جمله‌های ناآشنا رو علامت بزنید.',
+  'بار سوم: بدون متن گوش بدید و سعی کنید این‌بار کامل‌تر دنبالش کنید.',
+  'خلاصه‌ای از چیزی که متوجه شدید یا سوالاتی که براتون پیش اومد رو پایین بنویسید.'
+];
+
+function initListeningDefaults(){
+  listenWeekIdx = currentWeekIndex();
+  const wp = progress.weeks[listenWeekIdx];
+  const idx = wp.listening.findIndex(s => !s.done);
+  listenSessIdx = idx === -1 ? 0 : idx;
+  renderListening();
+}
+
+function currentListeningItem(){
+  return WEEKS[listenWeekIdx].readings[listenSessIdx];
+}
+
+function renderListening(){
+  const wk = WEEKS[listenWeekIdx];
+  const wp = progress.weeks[listenWeekIdx];
+  const sessObj = wp.listening[listenSessIdx];
+
+  const pillRow = document.getElementById('listen-session-row');
+  pillRow.innerHTML = '';
+  wk.readings.forEach((r, i) => {
+    const b = document.createElement('button');
+    b.className = 'session-pill' + (i===listenSessIdx ? ' active' : '');
+    b.textContent = `جلسه ${i+1}`;
+    b.addEventListener('click', () => {
+      if(listenSessIdx===i) return;
+      listenSessIdx = i;
+      renderListening();
+    });
+    pillRow.appendChild(b);
+  });
+
+  const item = currentListeningItem();
+  document.getElementById('listen-topic-title').textContent = `هفته ${wk.num} — ${item.title}`;
+  document.getElementById('listen-topic-link').href = item.url;
+
+  const stepsWrap = document.getElementById('listen-steps');
+  stepsWrap.innerHTML = LISTENING_STEPS.map(s => `<li>${escapeHtml(s)}</li>`).join('');
+
+  const notesInput = document.getElementById('listen-notes-input');
+  notesInput.value = sessObj.notes;
+  notesInput.oninput = () => { sessObj.notes = notesInput.value; };
+  notesInput.onchange = () => { saveProgress(); };
+
+  const doneBtn = document.getElementById('listen-done-check');
+  doneBtn.className = 'check' + (sessObj.done ? ' on' : '');
+  doneBtn.textContent = sessObj.done ? '✓' : '';
+  doneBtn.onclick = () => {
+    sessObj.done = !sessObj.done;
+    saveProgress();
+    render();
+    renderListening();
+  };
+}
+
+/* ================= WRITING ================= */
+function currentWritingWeekIdx(){
+  return currentWeekIndex();
+}
+
+function renderWriting(){
+  const wIdx = currentWritingWeekIdx();
+  const wk = WEEKS[wIdx];
+  const wp = progress.weeks[wIdx];
+  const wr = wp.writing;
+
+  const keyWrap = document.getElementById('write-apikey-row');
+  keyWrap.innerHTML = '';
+  keyWrap.appendChild(buildApiKeyRow(renderWriting));
+  if(!claudeApiKey) keyWrap.appendChild(apiKeyHintNode());
+
+  document.getElementById('write-week-title').textContent = `هفته ${wk.num} — ${wk.title}`;
+  document.getElementById('write-prompt').innerHTML = `<b>تمرین نوشتاری:</b> ${escapeHtml(wk.writingPrompt)}`;
+
+  const ta = document.getElementById('write-textarea');
+  ta.value = wr.text;
+  const countEl = document.getElementById('write-count');
+  const updateCount = () => {
+    const words = ta.value.trim().length ? ta.value.trim().split(/\s+/).length : 0;
+    countEl.textContent = `${words} کلمه`;
+  };
+  updateCount();
+  ta.oninput = () => {
+    wr.text = ta.value;
+    updateCount();
+    document.getElementById('write-local-feedback-btn').disabled = !ta.value.trim();
+  };
+  ta.onchange = () => { saveProgress(); };
+
+  const doneBtn = document.getElementById('write-done-check');
+  doneBtn.className = 'check' + (wr.done ? ' on' : '');
+  doneBtn.textContent = wr.done ? '✓' : '';
+  doneBtn.onclick = () => {
+    wr.done = !wr.done;
+    saveProgress();
+    render();
+    renderWriting();
+  };
+
+  const feedbackBtn = document.getElementById('write-feedback-btn');
+  feedbackBtn.disabled = !claudeApiKey;
+  feedbackBtn.onclick = () => requestWritingFeedback(wIdx);
+
+  const localFeedbackBtn = document.getElementById('write-local-feedback-btn');
+  localFeedbackBtn.disabled = !ta.value.trim();
+  localFeedbackBtn.onclick = () => {
+    wr.feedback = localWritingFeedback(wk, wr.text);
+    wr.feedbackSource = 'local';
+    saveProgress();
+    renderWriting();
+  };
+
+  const feedbackWrap = document.getElementById('write-feedback-wrap');
+  feedbackWrap.innerHTML = '';
+  if(wr.feedback){
+    const card = document.createElement('div');
+    card.className = 'feedback-card';
+    const title = wr.feedbackSource === 'ai' ? '🤖 بازخورد هوش مصنوعی' : '🧮 بازخورد سریع (بدون هوش مصنوعی)';
+    card.innerHTML = `<h4>${title}</h4>${escapeHtml(wr.feedback)}`;
+    feedbackWrap.appendChild(card);
+  }
+}
+
+function localWritingFeedback(wk, text){
+  const trimmed = text.trim();
+  const words = trimmed.length ? trimmed.split(/\s+/) : [];
+  const wordCount = words.length;
+  const [minW, maxW] = wk.writingWordRange;
+  const lines = [];
+
+  if(wordCount < minW) lines.push(`⚠️ تعداد کلمات (${wordCount}) کمتر از بازه پیشنهادی (${minW} تا ${maxW}) هست — کمی بیشتر بنویسید.`);
+  else if(wordCount > maxW) lines.push(`⚠️ تعداد کلمات (${wordCount}) بیشتر از بازه پیشنهادی (${minW} تا ${maxW}) هست — سعی کنید خلاصه‌تر بنویسید.`);
+  else lines.push(`✅ تعداد کلمات (${wordCount}) داخل بازه پیشنهادیه (${minW} تا ${maxW}).`);
+
+  const sentences = trimmed.split(/[.!?]+/).map(s => s.trim()).filter(Boolean);
+  if(sentences.length){
+    const avgLen = Math.round(wordCount / sentences.length);
+    lines.push(`ℹ️ ${sentences.length} جمله نوشتید؛ به‌طور میانگین هر جمله حدود ${avgLen} کلمه داره.`);
+    if(avgLen > 25) lines.push('⚠️ بعضی جمله‌ها احتمالاً خیلی طولانی‌ان — جمله‌های کوتاه‌تر و واضح‌تر رو امتحان کنید.');
+  }
+
+  if(wk.writingChecks && wk.writingChecks.length){
+    lines.push('— بررسی ساختارهای گرامری هدف این هفته —');
+    wk.writingChecks.forEach(chk => {
+      const found = chk.regex.test(trimmed);
+      lines.push(`${found ? '✅' : '❌'} ${chk.label}${found ? '' : ' — پیدا نشد، سعی کنید حداقل یک‌بار ازش استفاده کنید.'}`);
+    });
+  }
+
+  const stop = new Set(['the','a','an','is','are','was','were','to','of','in','on','at','and','it','that','this','my','for','with','but','so','as','be','i']);
+  const freq = {};
+  trimmed.toLowerCase().replace(/[^a-z\s']/g,' ').split(/\s+/).filter(w => w && !stop.has(w) && w.length > 2).forEach(w => { freq[w] = (freq[w]||0) + 1; });
+  const repeated = Object.entries(freq).filter(([,c]) => c >= 4).sort((a,b) => b[1]-a[1]).slice(0,3);
+  if(repeated.length){
+    lines.push(`💡 این کلمات رو زیاد تکرار کردید: ${repeated.map(([w,c]) => `"${w}" (${c} بار)`).join('، ')} — برای تنوع بیشتر، هم‌معنی‌هاشون رو هم امتحان کنید.`);
+  }
+
+  if(trimmed && !/^[A-Z]/.test(trimmed)) lines.push('⚠️ جمله اول رو با حرف بزرگ انگلیسی شروع کنید.');
+  if(trimmed && !/[.!?]$/.test(trimmed)) lines.push('⚠️ متن رو با نقطه یا علامت مناسب تموم کنید.');
+
+  lines.push('', 'این یه بررسی خودکار و ساده‌ست (نه هوش مصنوعی) — فقط الگوها رو چک می‌کنه، نه معنی و روانی جمله‌ها رو.');
+
+  return lines.join('\n');
+}
+
+async function requestWritingFeedback(wIdx){
+  const wk = WEEKS[wIdx];
+  const wp = progress.weeks[wIdx];
+  const wr = wp.writing;
+  const text = wr.text.trim();
+  if(!text || !claudeApiKey) return;
+
+  const feedbackBtn = document.getElementById('write-feedback-btn');
+  feedbackBtn.disabled = true;
+  feedbackBtn.textContent = 'در حال دریافت بازخورد…';
+
+  const systemPrompt = `You are a supportive B1-level English writing tutor for a Persian-speaking learner. The learner wrote a short text for this prompt: "${wk.writingPrompt}" (theme: "${wk.title}").
+Give feedback IN PERSIAN, concise and encouraging:
+- ۲ تا ۳ نقطه قوت متن.
+- ۲ تا ۴ پیشنهاد اصلاحی مشخص (گرامر، انتخاب کلمه، یا ساختار)، هرکدام با ذکر جمله اصلی و نسخه اصلاح‌شده.
+- در پایان، یک نسخه‌ی کمی ویرایش‌شده و روان‌تر از کل متن به زبان انگلیسی.
+Keep the whole reply under 220 words.`;
+
+  try{
+    const feedback = await callClaude(systemPrompt, [{ role:'user', content: text }]);
+    wr.feedback = feedback || 'پاسخی دریافت نشد، دوباره امتحان کنید.';
+    wr.feedbackSource = 'ai';
+    saveProgress();
+  }catch(e){
+    wr.feedback = 'دریافت بازخورد ناموفق بود — کلید API رو بررسی کنید و دوباره امتحان کنید.';
+    wr.feedbackSource = 'ai';
+  }
+  feedbackBtn.disabled = !claudeApiKey;
+  feedbackBtn.textContent = 'دریافت بازخورد از هوش مصنوعی';
+  renderWriting();
+}
+
+/* ---------------- Events ---------------- */
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('view-' + btn.dataset.view).classList.add('active');
+    if(btn.dataset.view === 'focus' && !focusRunning && focusIdx===0 && !focusFinished){
+      rebuildFocusPhases();
+    }
+  });
+});
+
+document.getElementById('add-vocab-btn').addEventListener('click', () => {
+  const wEl = document.getElementById('v-word');
+  const mEl = document.getElementById('v-meaning');
+  const eEl = document.getElementById('v-example');
+  const word = wEl.value.trim();
+  const meaning = mEl.value.trim();
+  if(!word || !meaning) return;
+  vocab.push({ id: 'v_' + Date.now(), word, meaning, example: eEl.value.trim(), reviewed:false });
+  wEl.value=''; mEl.value=''; eEl.value='';
+  saveVocab();
+  renderVocab();
+  renderDashboard();
+});
+
+document.getElementById('reset-btn').addEventListener('click', () => {
+  if(!confirm('همه‌ی پیشرفت و لغات ذخیره‌شده پاک شود؟ این عمل قابل بازگشت نیست.')) return;
+  progress = defaultProgress();
+  vocab = [];
+  saveProgress();
+  saveVocab();
+  render();
+  initListeningDefaults();
+  renderWriting();
+});
+
+loadState();
+</script>
+</body>
+</html>
