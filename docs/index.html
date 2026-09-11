@@ -1567,12 +1567,21 @@ Rules for every reply:
   }
 }
 
+function stripForSpeech(text){
+  return text
+    .replace(/[\p{Extended_Pictographic}‍️]/gu, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
 function speak(text){
   if(!speakEnabled) return;
   try{
     if(!('speechSynthesis' in window)) return;
+    const clean = stripForSpeech(text);
+    if(!clean) return;
     speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
+    const u = new SpeechSynthesisUtterance(clean);
     u.lang = 'en-US';
     u.rate = 0.95;
     speechSynthesis.speak(u);
