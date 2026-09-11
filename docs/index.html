@@ -1366,31 +1366,32 @@ document.getElementById('mode-toggle').addEventListener('click', (e) => {
 });
 document.getElementById('mark-done-btn').addEventListener('click', markFocusSessionDone);
 
-/* ================= GEMINI API KEY + SHARED HELPER ================= */
-let geminiApiKey = '';
+/* ================= OPENROUTER API KEY + SHARED HELPER ================= */
+let openRouterApiKey = '';
+const OPENROUTER_MODEL = 'google/gemma-4-31b-it:free';
 
 async function loadApiKey(){
   try{
-    const k = storageGet('gemini-api-key');
-    geminiApiKey = k ? JSON.parse(k) : '';
-  }catch(e){ geminiApiKey = ''; }
+    const k = storageGet('openrouter-api-key');
+    openRouterApiKey = k ? JSON.parse(k) : '';
+  }catch(e){ openRouterApiKey = ''; }
 }
 async function saveApiKey(key){
-  geminiApiKey = key;
-  storageSet('gemini-api-key', JSON.stringify(key));
+  openRouterApiKey = key;
+  storageSet('openrouter-api-key', JSON.stringify(key));
 }
 
 function buildApiKeyRow(onChange){
   const wrap = document.createElement('div');
   wrap.className = 'api-key-row';
-  if(geminiApiKey){
+  if(openRouterApiKey){
     wrap.innerHTML = `<span class="api-key-status">🔑 کلید API ثبت شده</span><button class="link-btn">تغییرش بده</button>`;
     wrap.querySelector('button').addEventListener('click', async () => {
       await saveApiKey('');
       onChange();
     });
   } else {
-    wrap.innerHTML = `<input type="password" placeholder="کلید API رایگان Gemini رو وارد کنید"><button class="btn secondary">ذخیره</button>`;
+    wrap.innerHTML = `<input type="password" placeholder="کلید API رایگان OpenRouter رو وارد کنید (sk-or-…)"><button class="btn secondary">ذخیره</button>`;
     wrap.querySelector('button').addEventListener('click', async () => {
       const val = wrap.querySelector('input').value.trim();
       if(!val) return;
@@ -1404,31 +1405,35 @@ function buildApiKeyRow(onChange){
 function apiKeyHintNode(){
   const p = document.createElement('p');
   p.className = 'api-key-hint';
-  p.innerHTML = 'این کلید فقط در همین مرورگر ذخیره می‌شه و مستقیماً از مرورگر شما به گوگل ارسال می‌شه — جای دیگه‌ای فرستاده نمی‌شه. کلید رایگان رو از <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a> بگیرید (نیازی به کارت اعتباری نیست).';
+  p.innerHTML = 'این کلید فقط در همین مرورگر ذخیره می‌شه و مستقیماً از مرورگر شما به OpenRouter ارسال می‌شه — جای دیگه‌ای فرستاده نمی‌شه. کلید رایگان رو از <a href="https://openrouter.ai/keys" target="_blank" rel="noopener">openrouter.ai/keys</a> بگیرید (نیازی به کارت اعتباری نیست) و از مدل رایگان استفاده می‌کنیم.';
   return p;
 }
 
-async function callGemini(systemPrompt, messages){
-  if(!geminiApiKey) throw new Error('no-api-key');
-  const contents = messages.map(m => ({
-    role: m.role === 'assistant' ? 'model' : 'user',
-    parts: [{ text: m.content }]
-  }));
-  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent`, {
+async function callAI(systemPrompt, messages){
+  if(!openRouterApiKey) throw new Error('no-api-key');
+  const apiMessages = [
+    { role: 'system', content: systemPrompt },
+    ...messages.map(m => ({ role: m.role, content: m.content }))
+  ];
+  const response = await fetch(`https://openrouter.ai/api/v1/chat/completions`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", "x-goog-api-key": geminiApiKey },
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${openRouterApiKey}`,
+      "HTTP-Referer": location.href,
+      "X-Title": "English B1 Tracker"
+    },
     body: JSON.stringify({
-      system_instruction: { parts: [{ text: systemPrompt }] },
-      contents,
-      generationConfig: { maxOutputTokens: 1000 }
+      model: OPENROUTER_MODEL,
+      messages: apiMessages
     })
   });
   const data = await response.json();
   if(!response.ok){
     throw new Error((data && data.error && data.error.message) || 'request-failed');
   }
-  const parts = (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) || [];
-  return parts.map(p => p.text || '').join('').trim();
+  const choice = data.choices && data.choices[0];
+  return (choice && choice.message && choice.message.content || '').trim();
 }
 
 /* ================= AI CONVERSATION (Speaking partner) ================= */
@@ -1466,7 +1471,7 @@ function renderChat(){
   const keyWrap = document.getElementById('chat-apikey-row');
   keyWrap.innerHTML = '';
   keyWrap.appendChild(buildApiKeyRow(renderChat));
-  if(!geminiApiKey) keyWrap.appendChild(apiKeyHintNode());
+  if(!openRouterApiKey) keyWrap.appendChild(apiKeyHintNode());
 
   const pillRow = document.getElementById('chat-session-row');
   pillRow.innerHTML = '';
@@ -1506,15 +1511,15 @@ function renderChat(){
   win.scrollTop = win.scrollHeight;
 
   document.getElementById('speak-toggle-btn').classList.toggle('active', speakEnabled);
-  document.getElementById('chat-send-btn').disabled = chatLoading || !geminiApiKey;
-  document.getElementById('chat-input').disabled = chatLoading || !geminiApiKey;
+  document.getElementById('chat-send-btn').disabled = chatLoading || !openRouterApiKey;
+  document.getElementById('chat-input').disabled = chatLoading || !openRouterApiKey;
 }
 
 async function sendChatMessage(){
   try{
     const input = document.getElementById('chat-input');
     const text = input.value.trim();
-    if(!text || chatLoading || !geminiApiKey) return;
+    if(!text || chatLoading || !openRouterApiKey) return;
 
     chatHistory.push({ role:'user', text });
     input.value = '';
@@ -1532,7 +1537,7 @@ Rules for every reply:
 - Be warm and encouraging, like a supportive conversation partner, not a strict teacher.`;
 
     const apiMessages = chatHistory.map(m => ({ role: m.role, content: m.text }));
-    const reply = (await callGemini(systemPrompt, apiMessages)) || "Sorry, could you say that again?";
+    const reply = (await callAI(systemPrompt, apiMessages)) || "Sorry, could you say that again?";
     chatHistory.push({ role:'assistant', text: reply });
     chatLoading = false;
     renderChat();
@@ -1672,7 +1677,7 @@ function renderWriting(){
   const keyWrap = document.getElementById('write-apikey-row');
   keyWrap.innerHTML = '';
   keyWrap.appendChild(buildApiKeyRow(renderWriting));
-  if(!geminiApiKey) keyWrap.appendChild(apiKeyHintNode());
+  if(!openRouterApiKey) keyWrap.appendChild(apiKeyHintNode());
 
   document.getElementById('write-week-title').textContent = `هفته ${wk.num} — ${wk.title}`;
   document.getElementById('write-prompt').innerHTML = `<b>تمرین نوشتاری:</b> ${escapeHtml(wk.writingPrompt)}`;
@@ -1703,7 +1708,7 @@ function renderWriting(){
   };
 
   const feedbackBtn = document.getElementById('write-feedback-btn');
-  feedbackBtn.disabled = !geminiApiKey;
+  feedbackBtn.disabled = !openRouterApiKey;
   feedbackBtn.onclick = () => requestWritingFeedback(wIdx);
 
   const localFeedbackBtn = document.getElementById('write-local-feedback-btn');
@@ -1773,7 +1778,7 @@ async function requestWritingFeedback(wIdx){
   const wp = progress.weeks[wIdx];
   const wr = wp.writing;
   const text = wr.text.trim();
-  if(!text || !geminiApiKey) return;
+  if(!text || !openRouterApiKey) return;
 
   const feedbackBtn = document.getElementById('write-feedback-btn');
   feedbackBtn.disabled = true;
@@ -1787,7 +1792,7 @@ Give feedback IN PERSIAN, concise and encouraging:
 Keep the whole reply under 220 words.`;
 
   try{
-    const feedback = await callGemini(systemPrompt, [{ role:'user', content: text }]);
+    const feedback = await callAI(systemPrompt, [{ role:'user', content: text }]);
     wr.feedback = feedback || 'پاسخی دریافت نشد، دوباره امتحان کنید.';
     wr.feedbackSource = 'ai';
     saveProgress();
@@ -1795,7 +1800,7 @@ Keep the whole reply under 220 words.`;
     wr.feedback = 'دریافت بازخورد ناموفق بود — کلید API رو بررسی کنید و دوباره امتحان کنید.';
     wr.feedbackSource = 'ai';
   }
-  feedbackBtn.disabled = !geminiApiKey;
+  feedbackBtn.disabled = !openRouterApiKey;
   feedbackBtn.textContent = 'دریافت بازخورد از هوش مصنوعی';
   renderWriting();
 }
